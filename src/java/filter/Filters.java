@@ -127,6 +127,132 @@ public class Filters implements Filter {
             }
         }
 
+        // === DI CHUYỂN TẤT CẢ LOGIC REDIRECT LÊN ĐÂY (TRƯỚC chain.doFilter) ===
+        
+        //auto Home
+        if (url.contains("home.jsp")) {
+            httpResponse.sendRedirect("Home");
+            return;
+        }
+
+        //prevent login register when logged in
+        if (url.contains("login.jsp") || url.contains("register.jsp")) {
+            if (session != null && session.getAttribute("currentUser") != null) {
+                httpResponse.sendRedirect("Home");
+                return;
+            }
+        }
+
+        //redirect to login when session is null
+        if (url.contains("admin.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("profile.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("editprofile.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("view-all-post-user.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("changepassword.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("update") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("avatarUpdate") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("NewPost") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("ChangePassword") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("ViewAllPostUser") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("PostComments") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("PostDataPostUpdate") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("DeleteComment") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        } else if (url.contains("DeletePost") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("student.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("teacher.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("view-all-user.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("view-all-question.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("view-all-exam.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("view-all-payment.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }else if (url.contains("recharge.jsp") && (session == null || session.getAttribute("currentUser") == null)) {
+            httpResponse.sendRedirect("login.jsp");
+            return;
+        }
+        
+        //prevent redirect to other role page
+        if(url.contains("student.jsp") && session != null && session.getAttribute("currentUser") != null){
+            user = (Users) session.getAttribute("currentUser");
+            if (user.getRole() == 2) {
+                httpResponse.sendRedirect("teacher.jsp");
+                return;
+            }
+        }
+        else if(url.contains("teacher.jsp") && session != null && session.getAttribute("currentUser") != null){
+            user = (Users) session.getAttribute("currentUser");
+            if (user.getRole() == 3) {
+                httpResponse.sendRedirect("student.jsp");
+                return;
+            }
+        }
+        if(url.contains("teacher.jsp") && session != null && session.getAttribute("currentUser") != null){
+            user = (Users) session.getAttribute("currentUser");
+            if (user.getRole() == 1) {
+                httpResponse.sendRedirect("view-all-exam.jsp");
+                return;
+            }
+        }
+
+        if (url.contains("student.jsp") && session != null && session.getAttribute("currentUser") != null) {
+            user = (Users) session.getAttribute("currentUser");
+            if (user.getRole() == 3) {
+                Tests test = new StudentExamDAO().getLatestTest(user.getUserID());
+                if (test != null && test.getTimeLeft() != 0) {
+                    httpResponse.sendRedirect("ExamDetail?examID=" + test.getExamID());
+                    return;
+                }
+            }
+        }
+
+        //prevent admin page when user is not admin
+        if (url.contains("admin.jsp") && session != null && session.getAttribute("currentUser") != null) {
+            user = (Users) session.getAttribute("currentUser");
+            if (user.getRole() != 1) {
+                httpResponse.sendRedirect("404.jsp");
+                return;
+            }
+        }
+        
+        // === BẮT ĐẦU XỬ LÝ REQUEST ===
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
@@ -139,128 +265,6 @@ public class Filters implements Filter {
         }
 
         doAfterProcessing(request, response);
-        
-        session = httpRequest.getSession(false);
-        
-        //auto Home
-        if (url.contains("home.jsp")) {
-            httpResponse.sendRedirect("Home");
-            return;
-        }
-
-        //prevent login register when logged in
-        if (url.contains("login.jsp") || url.contains("register.jsp")) {
-            if (session.getAttribute("currentUser") != null) {
-                httpResponse.sendRedirect("Home");
-                return;
-            }
-        }
-
-        //redirect to login when session is null
-        if (url.contains("admin.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("profile.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("editprofile.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("view-all-post-user.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("changepassword.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("update") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("avatarUpdate") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("NewPost") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("ChangePassword") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("ViewAllPostUser") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("PostComments") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("PostDataPostUpdate") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("DeleteComment") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        } else if (url.contains("DeletePost") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("student.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("teacher.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("view-all-user.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("view-all-question.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("view-all-exam.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("view-all-payment.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }else if (url.contains("recharge.jsp") && session.getAttribute("currentUser") == null) {
-            httpResponse.sendRedirect("login.jsp");
-            return;
-        }
-        
-        //prevent redirect to other role page
-        if(url.contains("student.jsp") && session.getAttribute("currentUser") != null){
-            user = (Users) session.getAttribute("currentUser");
-            if (user.getRole() == 2) {
-                httpResponse.sendRedirect("teacher.jsp");
-            }
-        }
-        else if(url.contains("teacher.jsp") && session.getAttribute("currentUser") != null){
-            user = (Users) session.getAttribute("currentUser");
-            if (user.getRole() == 3) {
-                httpResponse.sendRedirect("student.jsp");
-            }
-        }
-        if(url.contains("teacher.jsp") && session.getAttribute("currentUser") != null){
-            user = (Users) session.getAttribute("currentUser");
-            if (user.getRole() == 1) {
-                httpResponse.sendRedirect("view-all-exam.jsp");
-            }
-        }
-
-        if (url.contains("student.jsp") && session.getAttribute("currentUser") != null) {
-            user = (Users) session.getAttribute("currentUser");
-            if (user.getRole() == 3) {
-                Tests test = new StudentExamDAO().getLatestTest(user.getUserID());
-                if (test != null && test.getTimeLeft() != 0) {
-                    httpResponse.sendRedirect("ExamDetail?examID=" + test.getExamID());
-                    return;
-                }
-            }
-        }
-
-        //prevent admin page when user is not admin
-        if (url.contains("admin.jsp") && session.getAttribute("currentUser") != null) {
-            user = (Users) session.getAttribute("currentUser");
-            if (user.getRole() != 1) {
-                httpResponse.sendRedirect("404.jsp");
-                return;
-            }
-        }
 
         //Check if user still have exam to do
         // If there was a problem, we want to rethrow it if it is
