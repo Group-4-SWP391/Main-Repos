@@ -19,10 +19,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 
-/**
- *
- * @author sonhu
- */
+
 public class EmailSender {
       // Phương thức gửi email chứa mã OTP
     public static void sendOtpToEmail(String recipientEmail, String otp_code) {
@@ -100,7 +97,7 @@ public class EmailSender {
    public static String generateOTP() {
         // Tạo mã OTP ngẫu nhiên
         Random random = new Random();
-        int otpLength = 6; // Length of OTP
+        int otpLength = 6; // Độ dài của mã OTP
         StringBuilder otp = new StringBuilder();
 
         for (int i = 0; i < otpLength; i++) {
@@ -146,4 +143,5 @@ public class EmailSender {
         return false;
     }
 }
+
 }

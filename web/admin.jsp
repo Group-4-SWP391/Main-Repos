@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
+<%@ page import="java.util.stream.Collectors" %>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard - THI247 Admin</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <link href="img/HCV.png" rel="icon">
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/admin-css.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <style>
+        body { background-color: #f6f9ff; font-family: 'Nunito', sans-serif; }
+        
+        /* Cards */
+        .card {
+            border: none; border-radius: 10px;
+            box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+            margin-bottom: 30px; transition: all 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card-title { padding: 20px 0 15px 0; font-size: 18px; font-weight: 500; color: #012970; }
+        .card-title span { color: #899bbd; font-size: 14px; font-weight: 400; }
+        .dashboard .info-card h6 { font-size: 28px; color: #012970; font-weight: 700; margin: 0; padding: 0; }
+        .card-icon {
+            font-size: 32px; line-height: 0; width: 64px; height: 64px;
+            flex-shrink: 0; flex-grow: 0; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Card Colors */
+        .sales-card .card-icon { color: #4154f1; background: #f6f6fe; }
+        .revenue-card .card-icon { color: #2eca6a; background: #e0f8e9; }
+        .customers-card .card-icon { color: #ff771d; background: #ffecdf; }
+        
+        /* Gradient Revenue Card */
+        .revenue-gradient-card { background: linear-gradient(45deg, #2eca6a, #17a2b8); color: white; }
+        .revenue-gradient-card .card-title { color: white !important; }
+        .revenue-gradient-card .text-muted { color: rgba(255,255,255,0.8) !important; }
+
+        /* Activity Feed */
+        .activity-item { position: relative; }
+        .activity-item:not(:last-child):before {
+            content: ""; position: absolute; width: 1px; background-color: #eceefe;
+            top: 10px; bottom: -10px; left: 64px;
+        }
+
+        /* Table & Modal */
+        .table thead th { background-color: #f6f9ff; color: #444; border-bottom: 2px solid #e0e5f2; }
+        .table td { vertical-align: middle; }
+        .modal-header { background-color: #4154f1; color: white; }
+        .modal-title { font-weight: 600; }
+        .report-reason-list { list-style: none; padding-left: 0; }
+        .report-reason-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .report-reason-list li:last-child { border-bottom: none; }
+    </style>
+</head>
+
+<body>
+
+    <header id="header" class="header fixed-top d-flex align-items-center bg-white shadow-sm" style="height: 60px; z-index: 997;">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="Home" class="logo d-flex align-items-center text-decoration-none px-4">
+                <span class="d-none d-lg-block text-primary fw-bold fs-4"><i class="fa fa-book me-2"></i>THI247 Admin</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn d-block d-lg-none fs-3 text-primary" style="cursor: pointer; margin-left: 10px;"></i>
+        </div>
+
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center m-0 p-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="badge bg-primary badge-number">3</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+                        <li class="dropdown-header">
+                            Bạn có thông báo mới
+                            <a href="ListAllNotification.jsp"><span class="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <%
+                            List<Notification> notis = new NotificationDAO().getTop3Notifications();
+                            for(Notification noti : notis){
+                        %>
+                        <li class="notification-item">
+                            <i class="bi bi-info-circle text-primary"></i>
+                            <div><p><%=noti.getNotiName()%></p></div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <% } %>
+                    </ul>
+                </li>
+
+                <%
+                    if(session.getAttribute("currentUser") != null){
+                        Users user = (Users)session.getAttribute("currentUser");
+                        String role = (user.getRole() == 1) ? "Admin" : (user.getRole() == 2 ? "User VIP" : "User");
+                %>
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <img src="<%=user.getAvatarURL()%>" alt="Profile" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                        <span class="d-none d-md-block dropdown-toggle ps-2 text-dark"><%=user.getUsername()%></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile shadow">
+                        <li class="dropdown-header text-center">
+                            <h6><%=user.getUsername()%></h6>
+                            <span><%=role%></span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item d-flex align-items-center" href="profile.jsp"><i class="bi bi-person"></i> <span>Thông tin</span></a></li>
+                        <li><a class="dropdown-item d-flex align-items-center" href="logout"><i class="bi bi-box-arrow-right"></i> <span>Đăng xuất</span></a></li>
+                    </ul>
+                </li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+
+    <aside id="sidebar" class="sidebar bg-white" style="position: fixed; top: 60px; left: 0; bottom: 0; width: 300px; z-index: 996; padding: 20px; box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1); overflow-y: auto;">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item"><a class="nav-link bg-primary text-white" href="admin.jsp"><i class="bi bi-grid-fill"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a class="nav-link collapsed" href="view-all-user.jsp"><i class="bi bi-people"></i><span>Quản lý người dùng</span></a></li>
+            <li class="nav-item"><a class="nav-link collapsed" href="view-all-payment.jsp"><i class="bi bi-cash-stack"></i><span>Giao dịch hệ thống</span></a></li>
+            <li class="nav-item"><a class="nav-link collapsed" href="view-all-exam.jsp"><i class="bi bi-journal-check"></i><span>Quản lí kiểm tra</span></a></li>
+            <li class="nav-item"><a class="nav-link collapsed" href="view-all-question.jsp"><i class="bi bi-question-square"></i><span>Quản lí câu hỏi</span></a></li>
+            <li class="nav-item"><a class="nav-link collapsed" href="notification.jsp"><i class="bi bi-bell"></i><span>Thông báo hệ thống</span></a></li>
+             <li class="nav-item mt-4">
+                <a class="nav-link collapsed rounded text-secondary" href="Home">
+                    <i class="bi bi-arrow-left-circle"></i> <span>Về trang chủ</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main id="main" class="main" style="margin-top: 60px; margin-left: 300px; padding: 20px 30px; transition: all 0.3s;">
+
+        <div class="pagetitle mb-4">
+            <h1 class="fw-bold text-primary">Tổng quan hệ thống</h1>
+            <nav>
+                <ol class="breadcrumb bg-transparent p-0 m-0">
+                    <li class="breadcrumb-item"><a href="Home">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+
+        <%
+            UserDAO userDAO = new UserDAO();
+            PaymentDAO paymentDAO = new PaymentDAO();
+            
+            // 1. Số liệu User
+            List<Users> users = userDAO.getAllUsers();
+            List<Users> teachers = userDAO.getAllUsersType(2);
+            List<Users> students = userDAO.getAllUsersType(3);
+            
+            // 2. Tổng Doanh Thu
+            long totalRevenue = paymentDAO.getTotalRevenue();
+            
+            // 3. Dữ liệu Biểu đồ (Map<Tháng, Tiền>)
+            // Hàm này đã được sửa trong PaymentDAO để trả về Map theo thứ tự tháng
+            Map<String, Long> revenueMap = paymentDAO.getRevenueLast6Months();
+            
+            // 4. Chuyển Map thành JSON cho Javascript
+            String chartMonths = "[]";
+            String chartData = "[]";
+            
+            if (revenueMap != null && !revenueMap.isEmpty()) {
+                // Tạo mảng tháng: ['Thg 5', 'Thg 6', 'Thg 7'...]
+                chartMonths = "['" + String.join("', '", revenueMap.keySet()) + "']";
+                // Tạo mảng tiền: [1500000, 2000000, 500000...]
+                chartData = revenueMap.values().toString();
+            }
+
+            // 5. Lấy 5 giao dịch gần nhất
+            List<Payment> recentPayments = paymentDAO.getRecentTransactions(5);
+        %>
+
+        <section class="section dashboard">
+            <div class="row">
+
+                <div class="col-xxl-4 col-md-4">
+                    <div class="card info-card sales-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Tổng Người Dùng <span>| All</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><%=users.size()%></h6>
+                                    <span class="text-success small pt-1 fw-bold">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-4 col-md-4">
+                    <div class="card info-card revenue-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Học Sinh <span>| Students</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-emoji-smile"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><%=students.size()%></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-4 col-md-4">
+                    <div class="card info-card customers-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Giáo Viên/VIP <span>| Teachers</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6><%=teachers.size()%></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xxl-12 col-md-12">
+                    <div class="card info-card revenue-gradient-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-white">Tổng Doanh Thu</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-white text-success">
+                                    <i class="bi bi-cash-stack" style="font-size: 32px;"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 class="text-white"><%= String.format("%,.0f", (double)totalRevenue) %> VNĐ</h6>
+                                    <span class="text-white small pt-1 fw-bold">Tổng hợp</span> 
+                                    <span class="text-white-50 small pt-2 ps-1">từ tất cả giao dịch</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Biểu đồ dòng tiền <span>| Theo tháng</span></h5>
+                            <div id="reportsChart"></div>
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Giao dịch mới <span>| Recent</span></h5>
+                            <div class="activity">
+                                <% 
+                                if(recentPayments == null || recentPayments.isEmpty()) { 
+                                %>
+                                    <p class="text-center text-muted small mt-3">Chưa có giao dịch nào.</p>
+                                <% 
+                                } else {
+                                    for (Payment p : recentPayments) {
+                                        Users payer = userDAO.findByUserID(p.getUserID());
+                                        String payerName = (payer != null) ? payer.getUsername() : "Unknown User";
+                                        
+                                        // Xử lý ngày tháng (Lấy 10 ký tự đầu yyyy-MM-dd)
+                                        String dateStr = p.getPaymentDate();
+                                        if (dateStr != null && dateStr.length() > 10) {
+                                            dateStr = dateStr.substring(0, 10); 
+                                        }
+                                %>
+                                <div class="activity-item d-flex mb-3">
+                                    <div class="activite-label text-muted small" style="min-width: 85px;">
+                                        <%= dateStr %>
+                                    </div>
+                                    <i class='bi bi-circle-fill activity-badge text-success align-self-start' style="font-size: 8px; margin-right: 10px; margin-top: 6px;"></i>
+                                    <div class="activity-content small">
+                                        <strong><%= payerName %></strong> thanh toán
+                                        <div class="text-success fw-bold">+<%= String.format("%,d", p.getAmount()) %> đ</div>
+                                        <div class="text-muted" style="font-size: 0.8em;">(<%= p.getBank() %>)</div>
+                                    </div>
+                                </div>
+                                <% 
+                                    }
+                                } 
+                                %>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="col-12">
+                    <div class="card recent-sales overflow-auto">
+                        <div class="card-body">
+                            <h5 class="card-title">Danh sách tố cáo vi phạm <span>| Mới nhất</span></h5>
+                            <table class="table table-hover datatable align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Người tố cáo</th>
+                                        <th scope="col">Người bị tố cáo</th>
+                                        <th scope="col">Ngày tố cáo</th>
+                                        <th scope="col" class="text-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <%
+                                    List<Report> reports = new ReportDAO().getAllReports();
+                                    if (reports.isEmpty()) {
+                                    %>
+                                        <tr><td colspan="4" class="text-center text-muted py-4">Không có tố cáo nào cần xử lý.</td></tr>
+                                    <% } else { 
+                                        for(int i = reports.size() - 1; i >= 0; i--){
+                                            Report report = reports.get(i);
+                                            Users reportedUser = new UserDAO().findByUserID(report.getUserId()); 
+                                            Users userReport = new UserDAO().findByUserID(report.getUserReportedId());
+                                            String modalDetailId = "reportModal" + i;
+                                    %>
+                                        <tr>
+                                            <td><a href="UserProfile?userID=<%=report.getUserReportedId()%>" class="fw-bold text-dark"><%=userReport.getUsername()%></a></td>
+                                            <td><a href="UserProfile?userID=<%=report.getUserId()%>" class="text-primary"><%=reportedUser.getUsername()%></a></td>
+                                            <td><span class="badge bg-light text-dark border"><%=report.getReportDate()%></span></td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#<%=modalDetailId%>"><i class="bi bi-eye-fill me-1"></i> Xem chi tiết</button>
+                                                
+                                                <div class="modal fade" id="<%=modalDetailId%>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Chi tiết tố cáo</h5>
+                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body text-start p-4">
+                                                                <p><strong>Người tố cáo:</strong> <%=userReport.getUsername()%></p>
+                                                                <p><strong>Đối tượng:</strong> <%=reportedUser.getUsername()%></p>
+                                                                <ul class="report-reason-list">
+                                                                    <% for(ReportReason reason: report.getReasons()){ if(reason.getReasonId() == 7) continue; %>
+                                                                    <li><i class="bi bi-check2-square text-danger"></i> <%=reason.getReasonName()%></li>
+                                                                    <% } %>
+                                                                    <li><i class="bi bi-pencil-square text-warning"></i> <strong>Nội dung:</strong> <%=report.getReportContext()%></li>
+                                                                </ul>
+                                                                <% if(report.getReportImg() != null && !report.getReportImg().isEmpty()){ %>
+                                                                <img src="<%=report.getReportImg()%>" class="img-fluid mt-2 rounded" style="max-height:200px"/>
+                                                                <% } %>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                                <form action="DeleteReport" method="GET" class="d-inline"><input type="hidden" name="reportID" value="<%=report.getReportId()%>"><button class="btn btn-success">Xác nhận</button></form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% } } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="position: fixed; width: 40px; height: 40px; bottom: 15px; right: 15px; z-index: 99999;">
+        <i class="bi bi-arrow-up-short fs-4"></i>
+    </a>
+
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Sidebar toggle logic...
+            const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+            if(toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('toggle-sidebar');
+                    const main = document.querySelector('#main');
+                    const sidebar = document.querySelector('#sidebar');
+                    if(document.body.classList.contains('toggle-sidebar')){
+                        sidebar.style.left = '-300px'; main.style.marginLeft = '0';
+                    } else {
+                        sidebar.style.left = '0';
+                        if(window.innerWidth >= 1200) main.style.marginLeft = '300px';
+                    }
+                });
+            }
+
+            // ApexCharts Configuration
+            var options = {
+                series: [{
+                    name: 'Doanh thu',
+                    data: <%= chartData %> // Dữ liệu tiền từ Java
+                }],
+                chart: {
+                    height: 350,
+                    type: 'area',
+                    toolbar: { show: false },
+                    fontFamily: 'Nunito, sans-serif'
+                },
+                markers: { size: 5, hover: { size: 7 } },
+                colors: ['#2eca6a'],
+                fill: {
+                    type: "gradient",
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 2 },
+                xaxis: {
+                    categories: <%= chartMonths %>, // Dữ liệu tháng từ Java
+                    tooltip: { enabled: false }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (value) {
+                            if (value >= 1000000) return (value / 1000000).toFixed(1) + "M";
+                            if (value >= 1000) return (value / 1000).toFixed(0) + "k";
+                            return value;
+                        }
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val.toLocaleString('vi-VN') + " VNĐ";
+                        }
+                    }
+                }
+            };
+
+            var chart = new ApexCharts(document.querySelector("#reportsChart"), options);
+            chart.render();
+        });
+    </script>
+
+</body>
+</html>

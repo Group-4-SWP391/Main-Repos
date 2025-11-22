@@ -78,7 +78,7 @@ new StudentExamDAO().updateTestTime(test.getTestID(), 0);
             </fieldset>
             <div>
                 <button class="btn btn-primary"><a href="ExamDetail?examID=<%=examID%>" style="text-decoration: none; color:white">Thi lại</a></button>
-                <button class="btn btn-primary"><a href="student.jsp" style="text-decoration: none; color:white">Trở về</a></button>
+                <button class="btn btn-primary"><a href="testhistory.jsp" style="text-decoration: none; color:white">Trở về</a></button>
                 <button class="btn btn-primary"><a href="PassDataResultDetail?testID=<%=test.getTestID()%>" style="text-decoration: none; color:white">Xem chi tiết</a></button>
             </div>
     </div>

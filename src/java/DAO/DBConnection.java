@@ -10,13 +10,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author ADMIN
- */
+
 public class DBConnection {
 
-    public static String url = "jdbc:sqlserver://Admin\\MAY1;databaseName=THI247;encrypt=true;trustServerCertificate=true";
+    public static String url = "jdbc:sqlserver://DUONGCHOU;databaseName=THI247;encrypt=true;trustServerCertificate=true";
     public static String user = "sa";
     public static String password = "123";
 
