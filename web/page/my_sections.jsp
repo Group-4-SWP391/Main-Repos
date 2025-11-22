@@ -46,7 +46,7 @@
         <div class="header">
             <%@include file="../header.jsp" %>            
         </div>
-        <a class="btn btn-primary" style="background-color: ; margin-top: 7%; margin-left: 5%" href="${pageContext.request.contextPath}/SectionsController?action=get">Trở về</a>
+        <a class="btn btn-primary" style="background-color:blue ; margin-top: 7%; margin-left: 5%" href="${pageContext.request.contextPath}/SectionsController?action=get">Trở về</a>
 
         <div class="section-list">
             <c:forEach var="section" items="${my_sections}">

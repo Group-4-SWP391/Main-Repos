@@ -18,11 +18,11 @@
             <c:choose>
                 <c:when test="${section.sectionId != 0}">
                     <!-- Nếu sectionId không bằng 0, trả về trang MySectionsController -->
-                    <a class="btn btn-primary" style="background-color: ; margin-top: 7%; margin-left: 5%; margin-bottom: -5%" href="${pageContext.request.contextPath}/MySectionsController?action=get">Trở về</a>
+                    <a class="btn btn-primary" style="background-color:blue ; margin-top: 7%; margin-left: 5%; margin-bottom: -5%" href="${pageContext.request.contextPath}/MySectionsController?action=get">Trở về</a>
                 </c:when>
                 <c:otherwise>
                     <!-- Nếu sectionId bằng 0, trả về trang SectionsController -->
-                    <a class="btn btn-primary" style="background-color: ; margin-top: 7%; margin-left: 5%; margin-bottom: -5%" href="${pageContext.request.contextPath}/SectionsController?action=get">Trở về</a>
+                    <a class="btn btn-primary" style="background-color:blue ; margin-top: 7%; margin-left: 5%; margin-bottom: -5%" href="${pageContext.request.contextPath}/SectionsController?action=get">Trở về</a>
                 </c:otherwise>
             </c:choose>
         </div>

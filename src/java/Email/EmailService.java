@@ -4,10 +4,6 @@
  */
 package Email;
 
-/**
- *
- * @author Dai Nhan
- */
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -37,8 +33,8 @@ public class EmailService implements IJavaMail {
     try {
         MimeMessage message = new MimeMessage(session);
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        message.setSubject(subject); // Set email subject
-        message.setText(messageContent); // Set email content
+        message.setSubject(subject); // Đặt tiêu đề của email
+        message.setText(messageContent); // Đặt nội dung của email
 
         // send message
         Transport.send(message);
