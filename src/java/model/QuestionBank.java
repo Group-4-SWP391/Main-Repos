@@ -17,8 +17,10 @@ public class QuestionBank {
     private String explain;
     private String QuestionImg;
     private String explainImg;
+    private int difficultyLevel; // 1=Dễ, 2=Vừa, 3=Khó
 
     public QuestionBank() {
+        this.difficultyLevel = 1; // Default: Dễ
     }
 
     public QuestionBank(int userID, int questionId, int subjectId, String questionContext, String choice1, String choice2, String choice3, String choiceCorrect, String explain, String QuestionImg, String explainImg) {
@@ -33,6 +35,23 @@ public class QuestionBank {
         this.explain = explain;
         this.QuestionImg = QuestionImg;
         this.explainImg = explainImg;
+        this.difficultyLevel = 1; // Default: Dễ
+    }
+    
+    // Constructor with difficulty level
+    public QuestionBank(int userID, int questionId, int subjectId, String questionContext, String choice1, String choice2, String choice3, String choiceCorrect, String explain, String QuestionImg, String explainImg, int difficultyLevel) {
+        this.userID = userID;
+        this.questionId = questionId;
+        this.subjectId = subjectId;
+        this.questionContext = questionContext;
+        this.choice1 = choice1;
+        this.choice2 = choice2;
+        this.choice3 = choice3;
+        this.choiceCorrect = choiceCorrect;
+        this.explain = explain;
+        this.QuestionImg = QuestionImg;
+        this.explainImg = explainImg;
+        this.difficultyLevel = difficultyLevel;
     }
 
     public int getQuestionId() {
@@ -123,8 +142,51 @@ public class QuestionBank {
         this.userID = userID;
     }
 
+    public int getDifficultyLevel() {
+        return difficultyLevel;
+    }
+
+    public void setDifficultyLevel(int difficultyLevel) {
+        if (difficultyLevel < 1 || difficultyLevel > 3) {
+            throw new IllegalArgumentException("Difficulty level must be 1 (Dễ), 2 (Vừa), or 3 (Khó)");
+        }
+        this.difficultyLevel = difficultyLevel;
+    }
+    
+    /**
+     * Lấy tên mức độ khó bằng tiếng Việt
+     * @return "Dễ", "Vừa", hoặc "Khó"
+     */
+    public String getDifficultyLevelName() {
+        return DifficultyLevel.fromValue(difficultyLevel).getDisplayNameVi();
+    }
+    
+    /**
+     * Lấy DifficultyLevel enum
+     * @return DifficultyLevel enum
+     */
+    public DifficultyLevel getDifficulty() {
+        return DifficultyLevel.fromValue(difficultyLevel, DifficultyLevel.EASY);
+    }
+    
+    /**
+     * Set difficulty bằng enum
+     * @param difficulty DifficultyLevel enum
+     */
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficultyLevel = difficulty.getValue();
+    }
+    
+    /**
+     * Lấy HTML badge cho hiển thị mức độ
+     * @return HTML badge string
+     */
+    public String getDifficultyBadge() {
+        return getDifficulty().toHtmlBadge();
+    }
+
     @Override
     public String toString() {
-        return "QuestionBank{" + "userID=" + userID + ", questionId=" + questionId + ", subjectId=" + subjectId + ", questionContext=" + questionContext + ", choice1=" + choice1 + ", choice2=" + choice2 + ", choice3=" + choice3 + ", choiceCorrect=" + choiceCorrect + ", explain=" + explain + ", QuestionImg=" + QuestionImg + ", explainImg=" + explainImg + '}';
+        return "QuestionBank{" + "userID=" + userID + ", questionId=" + questionId + ", subjectId=" + subjectId + ", questionContext=" + questionContext + ", choice1=" + choice1 + ", choice2=" + choice2 + ", choice3=" + choice3 + ", choiceCorrect=" + choiceCorrect + ", explain=" + explain + ", QuestionImg=" + QuestionImg + ", explainImg=" + explainImg + ", difficultyLevel=" + difficultyLevel + '}';
     }
 }
