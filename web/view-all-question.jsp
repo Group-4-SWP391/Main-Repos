@@ -51,6 +51,21 @@
         
         .table td {
             vertical-align: middle;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 0;
+            overflow: hidden;
+        }
+        
+        /* Prevent table overflow */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table {
+            table-layout: fixed;
+            width: 100%;
         }
 
         /* Search & Filter Bar */
@@ -95,6 +110,26 @@
         .pagination .page-item.active .page-link {
             background-color: #4154f1;
             color: white;
+        }
+        
+        /* Modal Content Fix */
+        .modal-body p, .modal-body div {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        /* Responsive text in table */
+        .table td span {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Ensure images don't overflow */
+        .img-fluid, .img-thumb-question {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>

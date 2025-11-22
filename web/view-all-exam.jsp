@@ -46,6 +46,14 @@
         .table td {
             vertical-align: middle;
             color: #444;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 0;
+        }
+        
+        .table {
+            table-layout: fixed;
+            width: 100%;
         }
 
         /* Action Buttons */

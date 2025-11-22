@@ -7,10 +7,44 @@
 
    <style>
         .scrollable-tbody {
-    max-height: 400px; /* Adjust the height as needed */
-    overflow-y: auto;
-}
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
         
+        /* Fix table overflow */
+        .table {
+            table-layout: auto;
+            width: 100%;
+        }
+        
+        .table td {
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow: hidden;
+        }
+        
+        /* Limit image sizes in table */
+        .table td img {
+            max-width: 200px;
+            max-height: 150px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        /* Modal images should also be responsive */
+        .modal-body img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .table td img {
+                max-width: 120px;
+                max-height: 80px;
+            }
+        }
     </style> 
 <%
 if(session.getAttribute("questionList") != null){
@@ -64,7 +98,7 @@ int subjectID = (Integer)session.getAttribute("subjectID");
                                     <%
                                     if(context.startsWith("uploads/docreader")){
                                     %>
-                                <td style="max-width: 500px"><img src="<%=context%>" width="60%"alt="alt"/></td>
+                                <td style="max-width: 500px"><img src="<%=context%>" alt="Question Image" style="max-width: 200px; height: auto;"/></td>
                                     <%
                                         }
                                     else{
@@ -76,7 +110,7 @@ int subjectID = (Integer)session.getAttribute("subjectID");
                                 <%
                                 if(answer.startsWith("uploads/docreader")){
                                 %>
-                                <td><img src="<%=answer%>" width="50%" height="50%" alt="alt"/></td>
+                                <td><img src="<%=answer%>" alt="Answer Image" style="max-width: 150px; height: auto;"/></td>
                                     <%
                                         }
                                     else{
@@ -105,7 +139,7 @@ int subjectID = (Integer)session.getAttribute("subjectID");
                                                         <%
                                                         if(qb.getQuestionImg() != null){
                                                         %>
-                                                    <img src="<%=qb.getQuestionImg()%>" width="50%" height="50%"/>
+                                                    <img src="<%=qb.getQuestionImg()%>" style="max-width: 100%; height: auto;"/>
                                                     <%
                                                         }
                                                     %>

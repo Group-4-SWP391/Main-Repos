@@ -89,7 +89,7 @@ if(session.getAttribute("subjectID") != null){
                                     <%
                                     if(context.startsWith("uploads/docreader")){
                                     %>
-                                <td style="max-width: 500px"><img src="<%=context%>" width="60%"alt="alt"/></td>
+                                <td style="max-width: 500px"><img src="<%=context%>" alt="Question Image" style="max-width: 200px; height: auto;"/></td>
                                     <%
                                         }
                                     else{

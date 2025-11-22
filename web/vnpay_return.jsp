@@ -2,7 +2,7 @@
 <%@page import="java.nio.charset.StandardCharsets"%>
 <%@page import="VNPay.Config"%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*, Email.EmailSender"%>
 
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.text.NumberFormat"%>
@@ -97,10 +97,39 @@ if(session.getAttribute("currentUser") != null){
                                     Users user = (Users)session.getAttribute("currentUser");
                                     if(check){
                                         session.setAttribute("savePay", false);
+                                        // Lưu thông tin giao dịch
                                         new UserDAO().createPayment(user.getUserID(), request.getParameter("vnp_TxnRef"), request.getParameter("vnp_BankCode"), amount, date);
+                                        // Cộng tiền vào tài khoản
                                         new UserDAO().addMoneyToBalance(amount / 1000, user.getUserID());
+                                        // Cập nhật thông tin user
                                         user = new UserDAO().findByUserID(user.getUserID());
                                         session.setAttribute("currentUser", user);
+                                        
+                                        // Gửi email thông báo nạp tiền thành công
+                                        try {
+                                            String transactionId = request.getParameter("vnp_TxnRef");
+                                            int coins = (int)(amount / 1000); // Số coin nhận được
+                                            
+                                            // Gọi method gửi email
+                                            boolean emailSent = EmailSender.sendPaymentSuccessEmail(
+                                                user.getEmail(),              // Email người nhận
+                                                user.getFullname(),           // Tên đầy đủ
+                                                amount,                       // Số tiền nạp (VNĐ)
+                                                transactionId,                // Mã giao dịch
+                                                user.getBalance(),            // Số dư mới
+                                                date                          // Ngày giao dịch
+                                            );
+                                            
+                                            if (emailSent) {
+                                                System.out.println("✓ Email thông báo nạp tiền thành công đã được gửi tới: " + user.getEmail());
+                                            } else {
+                                                System.err.println("✗ Không thể gửi email thông báo tới: " + user.getEmail());
+                                            }
+                                        } catch (Exception e) {
+                                            System.err.println("Lỗi khi gửi email thông báo: " + e.getMessage());
+                                            e.printStackTrace();
+                                            // Không throw exception để không ảnh hưởng đến giao dịch đã thành công
+                                        }
                                     }
                                     out.print("Thành công");
                                 } else {

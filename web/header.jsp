@@ -39,11 +39,53 @@
                 border-radius: 0.5rem; 
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
                 border: none;
-                padding: 10px 0; 
+                padding: 10px 0;
+                max-width: 300px;
+                min-width: 250px;
+                word-wrap: break-word;
+            }
+            
+            /* Force dropdown to stay within viewport */
+            .user-area .dropdown-menu {
+                position: absolute !important;
+                right: 0 !important;
+                left: auto !important;
+                transform: translateX(0) !important;
+                margin-top: 10px;
+            }
+            
+            /* Notification dropdown specific */
+            #notificationDropdown + .dropdown-menu {
+                right: 0 !important;
+                left: auto !important;
+                transform: translateX(0) !important;
+            }
+            
+            /* Profile dropdown specific */
+            .profile-dropdown-container .dropdown-menu {
+                right: 0 !important;
+                left: auto !important;
+                transform: translateX(0) !important;
+            }
+            
+            /* Prevent dropdown from going off-screen on mobile */
+            @media (max-width: 768px) {
+                .navbar .dropdown-menu {
+                    max-width: calc(100vw - 30px);
+                    min-width: 200px;
+                }
+                
+                .user-area .dropdown-menu {
+                    right: 10px !important;
+                }
             }
             .navbar .dropdown-item {
                 padding: 10px 15px;
                 transition: background-color 0.2s;
+                white-space: normal;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                max-width: 100%;
             }
             .navbar .dropdown-item:hover {
                 background-color: #f8f9fa; 
@@ -53,6 +95,22 @@
                 font-weight: 600;
                 color: #6c757d;
                 padding: 5px 15px;
+                white-space: normal;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            /* FIX: Prevent horizontal scroll */
+            html, body {
+                overflow-x: hidden;
+                width: 100%;
+                position: relative;
+            }
+            
+            /* Ensure all containers don't overflow */
+            .container, .container-fluid, .row {
+                max-width: 100%;
+                overflow-x: hidden;
             }
             
             /* ======== PHẦN CĂN CHỈNH QUAN TRỌNG ======== */
@@ -96,13 +154,22 @@
             .user-area {
                 display: flex;
                 align-items: center;
-                gap: 5px; 
+                gap: 5px;
+                position: relative;
+                margin-right: 15px;
             }
             
             .user-info-group {
                 display: flex;
                 align-items: center;
-                gap: 15px; 
+                gap: 15px;
+                position: relative;
+            }
+            
+            /* Ensure dropdowns within user-area are positioned correctly */
+            .user-info-group .dropdown,
+            .profile-dropdown-container {
+                position: relative;
             }
             
             .user-info-group .nav-link, 
@@ -317,5 +384,42 @@
             </div>
         </nav>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // FIX: Force dropdown menus to align right and not overflow  
+            document.addEventListener('DOMContentLoaded', function() {
+                // Prevent horizontal scroll globally
+                document.body.style.overflowX = 'hidden';
+                document.documentElement.style.overflowX = 'hidden';
+                document.documentElement.style.maxWidth = '100vw';
+                
+                // Get all dropdowns in user area
+                const userAreaDropdowns = document.querySelectorAll('.user-area .dropdown-menu');
+                
+                userAreaDropdowns.forEach(function(dropdown) {
+                    // Set initial styles
+                    dropdown.style.maxWidth = 'min(300px, calc(100vw - 40px))';
+                    
+                    // Listen for show event
+                    const parent = dropdown.closest('.dropdown');
+                    if (parent) {
+                        parent.addEventListener('show.bs.dropdown', function() {
+                            setTimeout(function() {
+                                // Force right alignment
+                                dropdown.style.position = 'absolute';
+                                dropdown.style.right = '0';
+                                dropdown.style.left = 'auto';
+                                dropdown.style.transform = 'translateX(0)';
+                                
+                                // Double check if overflowing
+                                const rect = dropdown.getBoundingClientRect();
+                                if (rect.right > window.innerWidth) {
+                                    dropdown.style.right = '10px';
+                                }
+                            }, 10);
+                        });
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
