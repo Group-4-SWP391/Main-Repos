@@ -125,6 +125,16 @@ Users user = (Users)session.getAttribute("currentUser");
                 </select>
 
                 <br><br>
+                
+                <!-- Chọn mức độ -->
+                <label for="difficultyLevel" style="font-weight: bold">Mức độ: <span style="color: red;">*</span></label>
+                <select name="difficultyLevel" id="difficultyLevel" class="form-control" required style="width: 200px;">
+                    <option value="1">🟢 Dễ (Easy)</option>
+                    <option value="2" selected>🟡 Vừa (Medium)</option>
+                    <option value="3">🔴 Khó (Hard)</option>
+                </select>
+                
+                <br><br>
                 <!-- Các trường thông tin câu hỏi, đáp án, giải thích, ... -->
                 <label for="question" style="font-weight: bold">Câu hỏi:</label>
                 <textarea
