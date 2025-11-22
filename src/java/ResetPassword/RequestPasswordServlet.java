@@ -16,7 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 
-
+/**
+ *
+ * @author sonhu
+ */
 @WebServlet("/RequestPasswordServlet")
 public class RequestPasswordServlet extends HttpServlet {
    
@@ -67,37 +70,51 @@ public class RequestPasswordServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    // Lấy email từ request
-    String email = request.getParameter("email");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy email từ request
+        String email = request.getParameter("email");
 
-    try {
-        UserDAO userDAO = new UserDAO();
-        // Lấy userId từ địa chỉ email
-        int userId = userDAO.getUserIdByEmail(email); 
+        // Validate email input
+        if (email == null || email.trim().isEmpty()) {
+            request.setAttribute("error", "Email không được để trống");
+            request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+            return;
+        }
 
-        // Generate token
-        String token = EmailSender.generateToken();
+        try {
+            UserDAO userDAO = new UserDAO();
+            // Lấy userId từ địa chỉ email
+            int userId = UserDAO.getUserIdByEmail(email);
 
-        // Lưu token và thời gian hết hạn vào cơ sở dữ liệu
-        Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + (10 * 60 * 1000));
-        PasswordResetUtil.saveTokenToDatabase(userId, token, expiryTime);
+            // Check if user exists
+            if (userId == -1) {
+                request.setAttribute("error", "Email không tồn tại trong hệ thống");
+                request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+                return;
+            }
 
-        // Tạo đường dẫn reset
-        String resetLink = PasswordResetUtil.generateResetLink(token);
+            // Generate token
+            String token = EmailSender.generateToken();
 
-        // Gửi email reset
-        EmailSender.sendResetEmail(email, resetLink);
+            // Lưu token và thời gian hết hạn vào cơ sở dữ liệu
+            Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + (10 * 60 * 1000));
+            PasswordResetUtil.saveTokenToDatabase(userId, token, expiryTime);
 
-        // Chuyển hướng đến trang xác nhận
-        response.sendRedirect("resetConfirmation.jsp?userId=" + userId); 
-    } catch (Exception ex) {
-        ex.printStackTrace();
-        // Xử lý exception hoặc thông báo lỗi cho người dùng
-      
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request");
+            // Tạo đường dẫn reset
+            String resetLink = PasswordResetUtil.generateResetLink(token);
+
+            // Gửi email reset
+            EmailSender.sendResetEmail(email, resetLink);
+
+            // Chuyển hướng đến trang xác nhận
+            response.sendRedirect("resetConfirmation.jsp?userId=" + userId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // Xử lý exception hoặc thông báo lỗi cho người dùng
+            request.setAttribute("error", "Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại sau.");
+            request.getRequestDispatcher("requestPassword.jsp").forward(request, response);
+        }
     }
-}
 
 
 

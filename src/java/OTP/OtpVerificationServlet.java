@@ -15,7 +15,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Users;
 
-
+/**
+ *
+ * @author sonhu
+ */
 @WebServlet("/VerifyOtpServlet")
 public class OtpVerificationServlet extends HttpServlet {
    

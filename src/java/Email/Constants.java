@@ -3,9 +3,9 @@ package Email;
 
 public class Constants {
 
-	public static String GOOGLE_CLIENT_ID = "621245293637-s73d1t26r1djdn1k8p1bogge2hu7tjgb.apps.googleusercontent.com";
+	public static String GOOGLE_CLIENT_ID = "804818262350-40vfko0abovcknrorrak2bdnhtl7nj07.apps.googleusercontent.com";
 
-	public static String GOOGLE_CLIENT_SECRET = "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";
+	public static String GOOGLE_CLIENT_SECRET = "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";
 
 	public static String GOOGLE_REDIRECT_URI = "http://localhost:8080/THI247/LoginGoogleHandler";
 
