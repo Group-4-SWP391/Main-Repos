@@ -68,6 +68,12 @@ public class LoginServlet extends HttpServlet {
                 Users user = userDAO.findByEmail(email);
                 int userID = user.getUserID();
 
+                // Kiểm tra nếu user bị ban
+                if (user.isBan()) {
+                    response.sendRedirect("banned.jsp");
+                    return;
+                }
+
                 // Kiểm tra lịch sử địa chỉ IP
                 UserIPHistoryDAO ipHistoryDAO = new UserIPHistoryDAO();
                 List<String> ipHistory = ipHistoryDAO.getUserIPHistory(userID);
@@ -75,60 +81,31 @@ public class LoginServlet extends HttpServlet {
                 // Kiểm tra ipCount
                 int ipCount = ipHistory.size();
 
-                String loginWarning = ""; // Biến để chứa thông báo
+                // Kiểm tra nếu đã có 3 IP khác nhau và IP hiện tại không nằm trong danh sách
+                if (ipCount >= 3 && !ipHistory.contains(userIP)) {
+                    // Ban tài khoản vì đăng nhập từ IP thứ 4
+                    ipHistoryDAO.setBanStatus(userID, true);
+                    response.sendRedirect("banned.jsp");
+                    return;
+                }
 
-                if (ipHistory.contains(userIP) || (ipCount == 0)) {
-                    
-                    
-                    if (ipCount == 0){
-                        ipHistoryDAO.addUserIP(userID, userIP);
-                    }
-                    
-                    // Nếu IP đã tồn tại trong lịch sử, cho phép đăng nhập và không ban tài khoản
-                    if (ipCount < 3) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("currentUser", user); // Lưu thông tin người dùng vào session
-                        session.setMaxInactiveInterval(3600*4); // Thời gian hết hiệu lực của session
-
-                        // Xử lý thông báo nếu đăng nhập từ IP mới
-                        if (ipCount == 2) {
-                            // Đây là lần đầu từ IP thứ ba (chưa ban)
-                            loginWarning = "Bạn đang đăng nhập từ máy tính mới, bạn có chắc không?";
-                        }
-                    }
-
-                    if (role == 3 || role == 2) {
-                        // Người dùng thường
-                        if (user.isBan()) {
-                            response.sendRedirect("banned.jsp");
-                        } else {
-                            response.sendRedirect("Home");
-                        }
-                    } else if (role == 1) {
-                        // Quản trị viên (admin)
-                        response.sendRedirect("admin.jsp");
-                    }
-                } else {
-
-                    // Lưu IP mới vào lịch sử
+                // Lưu IP nếu là IP mới
+                if (!ipHistory.contains(userIP)) {
                     ipHistoryDAO.addUserIP(userID, userIP);
+                }
 
-                    // Cảnh báo khi đăng nhập từ IP mới lần đầu (thông báo)
-                    if (ipCount == 2) {
-                        loginWarning = "Bạn đang đăng nhập từ một địa chỉ mới. Lần đăng nhập thứ hai từ địa chỉ này sẽ dẫn đến việc ban tài khoản.";
-                    }
+                // Tạo session cho user
+                HttpSession session = request.getSession();
+                session.setAttribute("currentUser", user);
+                session.setMaxInactiveInterval(3600 * 4); // 4 giờ
 
-                    // Nếu đăng nhập lần thứ hai từ IP mới (ipCount = 3), ban tài khoản
-                    if (ipCount == 3) {
-                        ipHistoryDAO.setBanStatus(userID, true);  // Cập nhật trạng thái ban
-                        response.sendRedirect("banned.jsp");
-                        return;  // Dừng lại, không cho phép đăng nhập nữa
-                    }
-
-                    // Truyền thông báo vào request
-                    request.setAttribute("loginWarning", loginWarning);
-                    // Chuyển tiếp yêu cầu về login.jsp
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                // Redirect dựa vào role
+                if (role == 3 || role == 2) {
+                    // Người dùng thường hoặc giáo viên
+                    response.sendRedirect("Home");
+                } else if (role == 1) {
+                    // Quản trị viên (admin)
+                    response.sendRedirect("admin.jsp");
                 }
             } else {
                 request.setAttribute("errorMessage", "Wrong email or password");
