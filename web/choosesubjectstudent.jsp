@@ -10,18 +10,130 @@
     </script>
 
     <style>
+        /* Modern UI for Choose Subject Student */
         body {
-            /* Màu xanh nhạt tương thích với màu chủ đạo của THI247 */
-            background-color: #e0f2f7; 
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9f 100%);
+            min-height: 100vh;
         }
-        /* Đảm bảo các khối chính có nền trắng để nổi bật trên nền xanh nhạt */
-        .course-item.bg-light {
-             background-color: #ffffff !important;
+
+        .container-xxl {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
         }
-        /* Cập nhật màu nút Trở về nếu cần (đã giữ nguyên màu xanh của bạn) */
-        .btn-blue-back {
-             background-color: #467bcb !important; /* Sử dụng màu xanh đậm hơn một chút cho nút Trở về */
-             border-color: #467bcb !important;
+
+        .section-title {
+            color: #fff !important;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+            background: none !important;
+        }
+
+        .container h1 {
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .course-item {
+            background: white !important;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #2596be 0%, #1a7a9f 100%);
+        }
+
+        .course-item:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            border-color: #2596be;
+        }
+
+        .course-item .position-relative {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .course-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .course-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .course-item h3 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .course-item:hover h3 {
+            color: #2596be;
+            transform: scale(1.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9f 100%) !important;
+            border: none !important;
+            border-radius: 25px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37,150,190,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37,150,190,0.4);
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wow {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .wow:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .course-item {
+                margin-bottom: 2rem;
+            }
         }
     </style>
 <%
@@ -33,7 +145,7 @@ List<Subjects> subjects = new ExamDAO().getAllSubject();
         <a class="btn btn-primary mt-3" href="Home">Trở về</a>
         
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Môn học</h6>
+            <h6 class="section-title bg-white text-center px-3">Môn học</h6>
             <h1 class="mb-5">Danh sách các môn học</h1>
         </div>
         

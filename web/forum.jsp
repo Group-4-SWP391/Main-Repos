@@ -10,33 +10,42 @@
     </script>
 
     <style type="text/css">
-        /* ==================== CẬP NHẬT MÀU NỀN THEO YÊU CẦU ==================== */
+        /* ==================== MODERN UI STYLING ==================== */
+        :root {
+            --primary-color: #0d6efd;
+            --danger-color: #dc3545;
+            --success-color: #198754;
+            --bg-light: #e0f2f7;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
         body {
             color: #1a202c;
             text-align: left;
-            /* Màu xanh nhạt hơn, lấy cảm hứng từ màu chữ "THI247" */
-            background-color: #e0f2f7; 
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .inner-wrapper {
             position: relative;
             height: calc(100vh - 3.5rem);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
         }
 
         .inner-sidebar {
             left: 0;
             width: 235px;
-            border-right: 1px solid #cbd5e0;
-            /* Giữ màu xám như code ban đầu */
-            background-color: #e2e8f0; 
+            border-right: 1px solid #e0e7ff;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
             z-index: 1;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         }
         
         .inner-main-footer,
         .inner-main-header {
-            /* Giữ màu trắng cho header/footer nội dung chính */
             background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
         /* ====================================================================== */
         
@@ -141,11 +150,7 @@
         .nav-link {
             color: #4a5568;
         }
-        .card {
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
-                0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        }
-
+        /* Modern Card Styling */
         .card {
             position: relative;
             display: flex;
@@ -154,17 +159,71 @@
             word-wrap: break-word;
             background-color: #fff;
             background-clip: border-box;
-            border: 0 solid rgba(0, 0, 0, 0.125);
-            border-radius: 0.25rem;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+            border-color: #d0d7de;
         }
 
         .card-body {
             flex: 1 1 auto;
             min-height: 1px;
-            padding: 1rem;
+            padding: 1.5rem;
         }
-        .container{
+        
+        .container {
             margin-top: 15px;
+        }
+
+        /* Forum Post Styling */
+        .forum-item {
+            transition: all 0.3s ease;
+        }
+
+        .forum-item img {
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .forum-item:hover img {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .forum-item h4 a {
+            color: #1a202c;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forum-item h4 a:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .forum-item h6 a {
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .forum-item h6 a:hover {
+            color: var(--primary-color);
+        }
+
+        .forum-item .text-secondary {
+            color: #6c757d !important;
+            transition: color 0.3s ease;
+        }
+
+        .forum-item:hover .text-secondary {
+            color: #495057 !important;
         }
         #image-preview {
             max-width: 400px; /* Adjust max width as needed */
@@ -204,15 +263,38 @@
             cursor: pointer;
             display: none; /* Initially hidden */
         }
-    </style>
-    <style>
+        /* Create Post Button */
+        .btn-primary.has-icon.btn-block {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary.has-icon.btn-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13,110,253,0.4);
+        }
+
+        /* Dropdown Styling */
         .dropbtn {
-            color: black;
-            padding: 16px;
-            font-size: 16px;
+            color: #6c757d;
+            padding: 8px 12px;
+            font-size: 1.25rem;
+            font-weight: bold;
             background-color: transparent;
             border: none;
             cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .dropbtn:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
         }
 
         .dropdown {
@@ -223,39 +305,145 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: transparent;
+            right: 0;
+            background-color: #fff;
             min-width: 160px;
             overflow: auto;
-            z-index: 1;
+            z-index: 1000;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #e9ecef;
         }
 
-        .dropdown-content a {
-            color: black;
-            padding: 7px 16px;
+        .dropdown-content a,
+        .dropdown-content button.btn-xoa {
+            color: #495057;
+            padding: 10px 16px;
             text-decoration: none;
             display: block;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            text-align: left;
+            background: transparent;
         }
 
-        .dropdown a:hover {
-            background-color: #ddd;
+        .dropdown-content a:hover,
+        .dropdown-content button.btn-xoa:hover {
+            background-color: #f8f9fa;
+            color: var(--danger-color);
         }
-        button.btn.btn-xoa:hover{
-            background-color: #ddd;
-        }
-        .btn-xoa{
-            background-color: transparent;
-            color: black;
+
+        .btn-xoa {
+            cursor: pointer;
         }
 
         .show {
             display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Improvements */
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header.bg-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%) !important;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Form Controls */
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+        }
+
+        /* Checkbox Styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-container:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        /* Button Improvements */
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-light {
+            background: #f8f9fa;
+            border-color: #e9ecef;
+        }
+
+        .btn-light:hover {
+            background: #e9ecef;
         }
     </style>
 
-</div>
-</head>
 <body>
-</div>
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
@@ -273,21 +461,7 @@
                         data-toggle="modal"
                         data-target="#threadModal"
                         >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="feather feather-plus mr-2"
-                            >
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
+                        <i class="fas fa-plus-circle mr-2"></i>
                         Tạo bài đăng
                     </button>
                 </div>
@@ -415,17 +589,18 @@
                                         <form action="NewReport" id="reportForm" method="POST" enctype="multipart/form-data">
                                             <input type="hidden" name="link" value="forum.jsp"/>
                                             <input type="hidden" name="otherUserID" value="<%=user.getUserID()%>"/>
-                                            <div class="modal-header d-flex align-items-center bg-primary text-white">
-                                                <h6 class="modal-title mb-0" id="threadModalLabel">
-                                                    Report
-                                                </h6>
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title" id="threadModalLabel">
+                                                    <i class="fas fa-flag mr-2"></i>Báo cáo vi phạm
+                                                </h5>
                                                 <button
                                                     type="button"
-                                                    class="close"
+                                                    class="close text-white"
                                                     data-dismiss="modal"
                                                     aria-label="Close"
+                                                    style="opacity: 1;"
                                                     >
-                                                    <span aria-hidden="true">×</span>
+                                                    <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body">
@@ -504,9 +679,11 @@
                                                             class="btn btn-light"
                                                             data-dismiss="modal"
                                                             >
-                                                        Hủy
+                                                        <i class="fas fa-times mr-2"></i>Hủy
                                                     </button>
-                                                    <input type="submit" class="btn btn-primary" value="Đăng"/>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-paper-plane mr-2"></i>Gửi báo cáo
+                                                    </button>
                                                 </div>
                                             </div> 
                                         </form>
@@ -610,17 +787,18 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <form action="NewPost" method="POST" enctype="multipart/form-data">
-                            <div class="modal-header d-flex align-items-center bg-primary text-white">
-                                <h6 class="modal-title mb-0" id="threadModalLabel">
-                                    Bài đăng mới
-                                </h6>
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="threadModalLabel">
+                                    <i class="fas fa-edit mr-2"></i>Tạo bài đăng mới
+                                </h5>
                                 <button
                                     type="button"
-                                    class="close"
+                                    class="close text-white"
                                     data-dismiss="modal"
                                     aria-label="Close"
+                                    style="opacity: 1;"
                                     >
-                                    <span aria-hidden="true">×</span>
+                                    <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
@@ -677,9 +855,11 @@
                                             class="btn btn-light"
                                             data-dismiss="modal"
                                             >
-                                        Hủy
+                                        <i class="fas fa-times mr-2"></i>Hủy
                                     </button>
-                                    <input type="submit" class="btn btn-primary" value="Đăng"/>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane mr-2"></i>Đăng bài
+                                    </button>
                                 </div>
 
                             </div> 
@@ -688,8 +868,8 @@
                 </div>
             </div>
         </div>
-    </div>        
-    <jsp:include page="footer.jsp"></jsp:include>
+    </div>
+</div>        
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript"></script>
@@ -842,8 +1022,14 @@
 
     <script>
         var textarea = document.getElementById("submit-comment");
-        textarea.addEventListener("input", function () {
-            this.style.height = "auto";
-            this.style.height = (this.scrollHeight) + "px";
-        });
+        if (textarea) {
+            textarea.addEventListener("input", function () {
+                this.style.height = "auto";
+                this.style.height = (this.scrollHeight) + "px";
+            });
+        }
     </script>
+</body>
+<jsp:include page="footer.jsp"></jsp:include>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

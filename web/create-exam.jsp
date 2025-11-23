@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
+<%@ page import="java.util.ArrayList" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="header.jsp"></jsp:include>
 
@@ -58,6 +59,11 @@
     /* --- 3. Cột phải: Danh sách câu hỏi --- */
     .question-list-container {
         padding-bottom: 50px;
+        overflow: visible !important;
+    }
+    
+    .col-lg-8 {
+        overflow: visible !important;
     }
 
     /* Card câu hỏi */
@@ -155,6 +161,87 @@
 
     .modal-header { background: #06BBCC; color: white; }
     .modal-content { border-radius: 15px; border: none; overflow: hidden; }
+    
+    /* Difficulty Filter Dropdown */
+    .dropdown {
+        position: relative;
+        z-index: 1000;
+    }
+    
+    .dropdown-menu {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        padding: 8px;
+        min-width: 220px;
+        z-index: 1050;
+        position: absolute !important;
+        will-change: transform;
+    }
+    
+    .dropdown-item {
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin-bottom: 4px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f0f9ff;
+        color: #06BBCC;
+        transform: translateX(5px);
+    }
+    
+    .dropdown-item.active {
+        background: linear-gradient(135deg, #06BBCC 0%, #049aa9 100%);
+        color: white;
+    }
+    
+    .dropdown-item.active:hover {
+        background: linear-gradient(135deg, #049aa9 0%, #037d8a 100%);
+        transform: translateX(0);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid #06BBCC;
+        color: #06BBCC;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: #06BBCC;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 187, 204, 0.3);
+    }
+    
+    /* Fix overflow issues */
+    .main-container {
+        overflow: visible !important;
+    }
+    
+    .row {
+        overflow: visible !important;
+    }
+    
+    /* Ensure dropdown is always on top */
+    .dropdown.show .dropdown-menu {
+        display: block;
+        animation: dropdownFadeIn 0.2s ease;
+    }
+    
+    @keyframes dropdownFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 
 <%
@@ -244,22 +331,79 @@ if(session.getAttribute("subjectID") != null){
                 </div>
             </div>
 
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-end mb-3">
+            <div class="col-lg-8" style="overflow: visible !important;">
+                <div class="d-flex justify-content-between align-items-center mb-3" style="position: relative; z-index: 100;">
                     <div>
                         <h5 class="fw-bold text-dark mb-1">Ngân hàng câu hỏi</h5>
-                        <small class="text-muted">Đã tìm thấy <strong><%=qbs != null ? qbs.size() : 0%></strong> câu hỏi khả dụng</small>
+                        <small class="text-muted">Đã tìm thấy <strong id="questionCount"><%=qbs != null ? qbs.size() : 0%></strong> câu hỏi khả dụng</small>
+                    </div>
+                    
+                    <!-- Filter by Difficulty -->
+                    <div class="dropdown" style="position: relative;">
+                        <% 
+                            String difficultyFilter = request.getParameter("difficultyFilter");
+                            if(difficultyFilter == null) difficultyFilter = "all";
+                            String filterDisplay = "Tất cả mức độ";
+                            if(difficultyFilter.equals("1")) filterDisplay = "🟢 Dễ";
+                            else if(difficultyFilter.equals("2")) filterDisplay = "🟡 Vừa";
+                            else if(difficultyFilter.equals("3")) filterDisplay = "🔴 Khó";
+                        %>
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="difficultyDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 25px; padding: 8px 20px;">
+                            <i class="bi bi-funnel me-2"></i><%= filterDisplay %>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="difficultyDropdown" style="border-radius: 12px;">
+                            <li><a class="dropdown-item <%= difficultyFilter.equals("all") ? "active" : "" %>" href="?difficultyFilter=all">
+                                <i class="bi bi-list-ul me-2"></i>Tất cả mức độ
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item <%= difficultyFilter.equals("1") ? "active" : "" %>" href="?difficultyFilter=1">
+                                <span class="badge bg-success me-2">Dễ</span> Câu hỏi dễ
+                            </a></li>
+                            <li><a class="dropdown-item <%= difficultyFilter.equals("2") ? "active" : "" %>" href="?difficultyFilter=2">
+                                <span class="badge bg-warning text-dark me-2">Vừa</span> Câu hỏi vừa
+                            </a></li>
+                            <li><a class="dropdown-item <%= difficultyFilter.equals("3") ? "active" : "" %>" href="?difficultyFilter=3">
+                                <span class="badge bg-danger me-2">Khó</span> Câu hỏi khó
+                            </a></li>
+                        </ul>
                     </div>
                 </div>
 
                 <div class="question-list-container">
                     <%
                     if (qbs != null && qbs.size() > 0) {
-                        for(int i = qbs.size() - 1; i >= 0; i--){
-                            QuestionBank qb = qbs.get(i);
+                        // Lọc câu hỏi theo độ khó
+                        List<QuestionBank> filteredQbs = new ArrayList<>();
+                        for(QuestionBank qb : qbs) {
+                            if(difficultyFilter.equals("all") || 
+                               (difficultyFilter.equals("1") && qb.getDifficultyLevel() == 1) ||
+                               (difficultyFilter.equals("2") && qb.getDifficultyLevel() == 2) ||
+                               (difficultyFilter.equals("3") && qb.getDifficultyLevel() == 3)) {
+                                filteredQbs.add(qb);
+                            }
+                        }
+                        
+                        if(filteredQbs.size() == 0) {
+                    %>
+                            <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+                                <i class="bi bi-funnel-fill display-1 text-muted opacity-25"></i>
+                                <p class="mt-3 text-muted fw-bold">Không tìm thấy câu hỏi nào với mức độ này.</p>
+                                <a href="?" class="btn btn-outline-primary btn-sm mt-2">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>Xem tất cả
+                                </a>
+                            </div>
+                    <%
+                        } else {
+                    %>
+                            <script>
+                                document.getElementById('questionCount').textContent = <%= filteredQbs.size() %>;
+                            </script>
+                    <%
+                            for(int i = filteredQbs.size() - 1; i >= 0; i--){
+                                QuestionBank qb = filteredQbs.get(i);
                             String context = qb.getQuestionContext();
                             String answer = qb.getChoiceCorrect();
-                            String modalId = "modalDetail" + i;
+                            String modalId = "modalDetail" + qb.getQuestionId();
                             
                             String displayContext = (context != null && context.length() > 120) ? context.substring(0, 120) + "..." : context;
                             if(displayContext == null || displayContext.isEmpty()) displayContext = "(Câu hỏi dạng hình ảnh)";
@@ -277,7 +421,7 @@ if(session.getAttribute("subjectID") != null){
                         
                         <div class="d-flex align-items-center mb-2">
                             <span class="badge badge-level <%=badgeClass%> me-2"><%=levelText%></span>
-                            <small class="text-muted fw-bold">#<%=i+1%></small>
+                            <small class="text-muted fw-bold">#<%=filteredQbs.size() - i%></small>
                         </div>
 
                         <div class="q-content">
@@ -312,7 +456,7 @@ if(session.getAttribute("subjectID") != null){
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Chi tiết câu hỏi #<%=i+1%></h5>
+                                    <h5 class="modal-title">Chi tiết câu hỏi #<%=filteredQbs.size() - i%></h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
@@ -378,6 +522,7 @@ if(session.getAttribute("subjectID") != null){
                         </div>
                     </div>
                     <% 
+                            }
                         }
                     } else { 
                     %>

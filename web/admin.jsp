@@ -49,10 +49,35 @@
         .revenue-gradient-card .text-muted { color: rgba(255,255,255,0.8) !important; }
 
         /* Activity Feed */
-        .activity-item { position: relative; }
+        .activity-item { 
+            position: relative; 
+            transition: all 0.2s ease;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .activity-item:hover {
+            background-color: #f8f9ff;
+            transform: translateX(5px);
+        }
         .activity-item:not(:last-child):before {
             content: ""; position: absolute; width: 1px; background-color: #eceefe;
-            top: 10px; bottom: -10px; left: 64px;
+            top: 10px; bottom: -10px; left: 74px;
+        }
+        
+        /* Custom scrollbar for activity */
+        .activity::-webkit-scrollbar {
+            width: 6px;
+        }
+        .activity::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .activity::-webkit-scrollbar-thumb {
+            background: #4154f1;
+            border-radius: 10px;
+        }
+        .activity::-webkit-scrollbar-thumb:hover {
+            background: #2e3f9f;
         }
 
         /* Table & Modal */
@@ -63,6 +88,46 @@
         .report-reason-list { list-style: none; padding-left: 0; }
         .report-reason-list li { padding: 5px 0; border-bottom: 1px dashed #eee; }
         .report-reason-list li:last-child { border-bottom: none; }
+        
+        /* Chart Filter Dropdown */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 8px;
+        }
+        .dropdown-item {
+            border-radius: 6px;
+            padding: 8px 15px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f4ff;
+            color: #4154f1;
+            transform: translateX(5px);
+        }
+        .dropdown-item.active {
+            background: linear-gradient(135deg, #4154f1 0%, #2e3f9f 100%);
+            color: white;
+        }
+        .dropdown-item.active:hover {
+            background: linear-gradient(135deg, #2e3f9f 0%, #1e2f7f 100%);
+            transform: translateX(0);
+        }
+        .btn-outline-primary {
+            border: 2px solid #4154f1;
+            color: #4154f1;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            background: #4154f1;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(65, 84, 241, 0.3);
+        }
     </style>
 </head>
 
@@ -259,21 +324,42 @@
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Biểu đồ dòng tiền <span>| Theo tháng</span></h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Biểu đồ dòng tiền <span id="chartPeriodLabel">| Theo tháng</span></h5>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="chartFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-funnel me-2"></i><span id="currentFilter">Theo tháng</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="chartFilterDropdown" style="min-width: 180px;">
+                                        <li><a class="dropdown-item" href="#" onclick="changeChartFilter('day', event); return false;">
+                                            <i class="bi bi-calendar-day me-2"></i>Theo ngày
+                                        </a></li>
+                                        <li><a class="dropdown-item active" href="#" onclick="changeChartFilter('month', event); return false;">
+                                            <i class="bi bi-calendar-month me-2"></i>Theo tháng
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="changeChartFilter('year', event); return false;">
+                                            <i class="bi bi-calendar-range me-2"></i>Theo năm
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
                             <div id="reportsChart"></div>
                         </div>
                     </div>
                 </div>
 
-<!--                <div class="col-lg-4">
-                    <div class="card">
+                <div class="col-lg-4">
+                    <div class="card" style="height: calc(100% - 30px);">
                         <div class="card-body">
                             <h5 class="card-title">Giao dịch mới <span>| Recent</span></h5>
-                            <div class="activity">
+                            <div class="activity" style="max-height: 400px; overflow-y: auto;">
                                 <% 
                                 if(recentPayments == null || recentPayments.isEmpty()) { 
                                 %>
-                                    <p class="text-center text-muted small mt-3">Chưa có giao dịch nào.</p>
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-inbox text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                                        <p class="text-muted small mt-2">Chưa có giao dịch nào.</p>
+                                    </div>
                                 <% 
                                 } else {
                                     for (Payment p : recentPayments) {
@@ -302,9 +388,16 @@
                                 } 
                                 %>
                             </div>
+                            <% if(recentPayments != null && !recentPayments.isEmpty()) { %>
+                            <div class="text-center mt-3 pt-3 border-top">
+                                <a href="view-all-payment.jsp" class="btn btn-sm btn-outline-primary rounded-pill">
+                                    <i class="bi bi-eye me-1"></i>Xem tất cả giao dịch
+                                </a>
+                            </div>
+                            <% } %>
                         </div>
                     </div>
-                </div>-->
+                </div>
 
                 <div class="col-12">
                     <div class="card recent-sales overflow-auto">
@@ -390,6 +483,28 @@
     <script src="assets/vendor/php-email-form/validate.js"></script>
 
     <script>
+        let chartInstance = null;
+        let currentFilterType = 'month';
+        
+        // Data cho các loại filter (giả lập - trong thực tế nên lấy từ backend)
+        const chartDataByType = {
+            day: {
+                categories: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                data: [50000, 75000, 100000, 85000, 120000, 95000, 110000, 130000, 115000, 140000, 125000, 150000, 135000, 160000, 145000, 170000, 155000, 180000, 165000, 190000, 175000, 200000, 185000, 210000, 195000, 220000, 205000, 230000, 215000, 240000],
+                label: '| 30 ngày gần nhất'
+            },
+            month: {
+                categories: <%= chartMonths %>,
+                data: <%= chartData %>,
+                label: '| Theo tháng'
+            },
+            year: {
+                categories: ['2020', '2021', '2022', '2023', '2024'],
+                data: [15000000, 25000000, 35000000, 45000000, 55000000],
+                label: '| Theo năm'
+            }
+        };
+        
         document.addEventListener("DOMContentLoaded", () => {
             // Sidebar toggle logic...
             const toggleBtn = document.querySelector('.toggle-sidebar-btn');
@@ -408,16 +523,27 @@
             }
 
             // ApexCharts Configuration
+            renderChart('month');
+        });
+        
+        function renderChart(filterType) {
+            const data = chartDataByType[filterType];
+            
             var options = {
                 series: [{
                     name: 'Doanh thu',
-                    data: <%= chartData %> // Dữ liệu tiền từ Java
+                    data: data.data
                 }],
                 chart: {
                     height: 350,
                     type: 'area',
                     toolbar: { show: false },
-                    fontFamily: 'Nunito, sans-serif'
+                    fontFamily: 'Nunito, sans-serif',
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
                 },
                 markers: { size: 5, hover: { size: 7 } },
                 colors: ['#2eca6a'],
@@ -433,7 +559,7 @@
                 dataLabels: { enabled: false },
                 stroke: { curve: 'smooth', width: 2 },
                 xaxis: {
-                    categories: <%= chartMonths %>, // Dữ liệu tháng từ Java
+                    categories: data.categories,
                     tooltip: { enabled: false }
                 },
                 yaxis: {
@@ -454,9 +580,40 @@
                 }
             };
 
-            var chart = new ApexCharts(document.querySelector("#reportsChart"), options);
-            chart.render();
-        });
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            chartInstance = new ApexCharts(document.querySelector("#reportsChart"), options);
+            chartInstance.render();
+        }
+        
+        function changeChartFilter(filterType, event) {
+            currentFilterType = filterType;
+            
+            // Update UI
+            const filterLabels = {
+                'day': 'Theo ngày',
+                'month': 'Theo tháng',
+                'year': 'Theo năm'
+            };
+            
+            document.getElementById('currentFilter').textContent = filterLabels[filterType];
+            document.getElementById('chartPeriodLabel').textContent = chartDataByType[filterType].label;
+            
+            // Update active state in dropdown
+            document.querySelectorAll('#chartFilterDropdown + .dropdown-menu .dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if(event && event.target) {
+                event.target.closest('.dropdown-item').classList.add('active');
+            }
+            
+            // Render chart with new data
+            renderChart(filterType);
+            
+            return false;
+        }
     </script>
 
 </body>

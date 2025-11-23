@@ -64,6 +64,20 @@ public class QuestionBankDAO extends DBConnection {
 
     }
 
+    // Update difficulty level for a question
+    public boolean updateQuestionDifficulty(int questionId, int difficultyLevel) {
+        String query = "UPDATE QuestionBank SET difficulty_level = ? WHERE question_id = ?";
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, difficultyLevel);
+            ps.setInt(2, questionId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     
 
 }

@@ -121,6 +121,14 @@
         <servlet-class>examController.ChangeExamName</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ChangeQuestionDifficulty</servlet-name>
+        <servlet-class>examController.ChangeQuestionDifficulty</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeExamDifficulty</servlet-name>
+        <servlet-class>examController.ChangeExamDifficulty</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>AddRandomQuestionToExam</servlet-name>
         <servlet-class>examController.AddRandomQuestionToExam</servlet-class>
     </servlet>
@@ -211,6 +219,14 @@
     <servlet>
         <servlet-name>ChangeExamName</servlet-name>
         <servlet-class>examController.ChangeExamName</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeQuestionDifficulty</servlet-name>
+        <servlet-class>examController.ChangeQuestionDifficulty</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangeExamDifficulty</servlet-name>
+        <servlet-class>examController.ChangeExamDifficulty</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddRandomQuestionToExam</servlet-name>
@@ -385,6 +401,14 @@
     <servlet-mapping>
         <servlet-name>ChangeExamName</servlet-name>
         <url-pattern>/ChangeExamName</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeQuestionDifficulty</servlet-name>
+        <url-pattern>/ChangeQuestionDifficulty</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeExamDifficulty</servlet-name>
+        <url-pattern>/ChangeExamDifficulty</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddRandomQuestionToExam</servlet-name>

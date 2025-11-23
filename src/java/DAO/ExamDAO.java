@@ -917,7 +917,7 @@ public class ExamDAO extends DBConnection {
 
     //change exam time
     public void changeExamTime(int examID, int timer) {
-        String query = "UPDATE Exam SET timer = ? and is_approved = false WHERE exam_id = ?";
+        String query = "UPDATE Exam SET timer = ?, is_approved = 0 WHERE exam_id = ?";
 
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, timer);
@@ -930,6 +930,33 @@ public class ExamDAO extends DBConnection {
             }
         } catch (Exception err) {
             System.out.println(err);
+        }
+    }
+
+    //change exam difficulty
+    public boolean changeExamDifficulty(int examID, int difficultyLevel) {
+        String query = "UPDATE Exam SET difficulty_level = ?, is_approved = 0 WHERE exam_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, difficultyLevel);
+            ps.setInt(2, examID);
+            
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Successfully updated difficulty_level to " + difficultyLevel + " for exam_id: " + examID);
+                return true;
+            } else {
+                System.out.println("No rows updated. Exam ID: " + examID + " may not exist.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error updating exam difficulty: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (Exception err) {
+            System.err.println("Error updating exam difficulty: " + err.getMessage());
+            err.printStackTrace();
+            return false;
         }
     }
 

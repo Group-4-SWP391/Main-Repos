@@ -17,100 +17,131 @@
     </script>
     
     <style>
-        /* Các biến màu chủ đạo của THI247 */
-        :root {
-            --thi247-primary: #17a2b8; /* Xanh ngọc */
-            --thi247-secondary: #007bff; /* Xanh dương */
-            --thi247-light-blue: #e0f2f7; /* Nền xanh nhạt */
-            --thi247-text-dark: #343a40;
-        }
-
-        /* 1. Màu nền đồng bộ */
+        /* Modern UI for Choose Subject User */
         body {
-            background-color: var(--thi247-light-blue); /* Đảm bảo nền xanh nhạt */
-            padding-bottom: 50px;
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9f 100%);
+            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* 2. Tiêu đề Trang */
+        .container-xxl {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
+        }
+
         .section-title {
-            color: var(--thi247-secondary) !important; /* Đổi màu tiêu đề nhỏ thành xanh dương */
+            color: #fff !important;
             font-weight: 700;
-            letter-spacing: 1px;
-        }
-        h1.mb-5 {
-            color: var(--thi247-text-dark);
-            font-weight: 900; /* Rất đậm */
-            font-size: 2.5rem;
-            margin-top: 10px !important;
-        }
-        .bg-white {
-            background-color: #ffffff !important;
-            padding: 5px 15px !important;
-            border-radius: 20px; /* Bo tròn tiêu đề nhỏ */
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+            background: none !important;
         }
 
-        /* 3. Thiết kế Khối Môn học (Course Item) */
+        .container h1 {
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+        }
+
         .course-item {
-            background-color: #ffffff !important;
-            border-radius: 15px; /* Bo góc nhiều hơn, mềm mại hơn */
+            background: white !important;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Đổ bóng mạnh hơn, đẹp hơn */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05); /* Viền mờ nhẹ */
-        }
-        .course-item:hover {
-            transform: translateY(-10px); /* Nảy lên rõ rệt */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-        }
-        
-        /* 4. Hình ảnh */
-        .course-item .img-fluid {
-            height: 220px; /* Tăng chiều cao ảnh */
-            width: 100%;
-            object-fit: cover;
         }
 
-        /* 5. Tiêu đề Môn học */
-        .course-item .text-center h3 {
-            font-size: 1.6rem; /* Tiêu đề lớn hơn */
-            font-weight: 800;
-            color: var(--thi247-primary); /* Đổi màu tiêu đề chính thành màu primary */
-            padding: 20px 10px; /* Cân đối padding */
-            margin-bottom: 0 !important;
-        }
-
-        /* 6. Nút Xem câu hỏi */
-        .course-item .btn-primary {
-            background-color: var(--thi247-secondary) !important; /* Xanh dương */
-            border-color: var(--thi247-secondary) !important;
-            padding: 10px 30px; /* Tăng padding nút */
-            font-weight: 700;
-            font-size: 1.1rem;
-            border-radius: 25px !important; /* Bo tròn hoàn toàn */
-            transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .course-item .btn-primary:hover {
-             background-color: #0056b3 !important;
-             border-color: #0056b3 !important;
-             transform: scale(1.05); /* Hiệu ứng phóng to nhẹ khi hover */
-        }
-        
-        /* Cải thiện container */
-        .container-xxl.py-5 {
-            padding-top: 5rem !important; /* Tăng padding trên */
-            padding-bottom: 5rem !important;
-        }
-        
-        /* Cải thiện vị trí nút trong ảnh */
-        .course-item .position-absolute {
+        .course-item::before {
+            content: '';
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%); /* Căn giữa hoàn hảo */
+            top: 0;
+            left: 0;
             width: 100%;
-            padding-bottom: 20px; /* Tăng khoảng cách dưới */
+            height: 5px;
+            background: linear-gradient(90deg, #2596be 0%, #1a7a9f 100%);
+        }
+
+        .course-item:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            border-color: #2596be;
+        }
+
+        .course-item .position-relative {
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .course-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .course-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .course-item h3 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .course-item:hover h3 {
+            color: #2596be;
+            transform: scale(1.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9f 100%) !important;
+            border: none !important;
+            border-radius: 25px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37,150,190,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37,150,190,0.4);
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wow {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .wow:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .course-item {
+                margin-bottom: 2rem;
+            }
         }
     </style>
 <%
@@ -120,8 +151,8 @@ List<Subjects> subjects = new ExamDAO().getAllSubject();
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">MÔN HỌC</h6>
-                <h1 class="mb-5">DANH SÁCH CÁC MÔN HỌC</h1>
+                <h6 class="section-title bg-white text-center px-3">Môn học</h6>
+                <h1 class="mb-5">Danh sách các môn học</h1>
             </div>
             <div class="row g-4 justify-content-center">
                 <%
