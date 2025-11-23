@@ -5,7 +5,7 @@
 <style>
     /* Modern Notification Page */
     :root {
-        --primary-color: #0d6efd;
+        --primary-color: #2596be;
         --danger-color: #dc3545;
         --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
         --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.12);

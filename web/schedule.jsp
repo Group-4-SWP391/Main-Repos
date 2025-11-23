@@ -4,7 +4,7 @@
     <style>
         /* Modern Schedule/Task Page */
         :root {
-            --primary-color: #0d6efd;
+            --primary-color: #2596be;
             --danger-color: #dc3545;
             --success-color: #198754;
             --card-shadow: 0 2px 8px rgba(0,0,0,0.08);

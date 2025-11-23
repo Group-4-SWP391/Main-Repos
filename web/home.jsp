@@ -1,6 +1,48 @@
 <!DOCTYPE html>
 <%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
 <jsp:include page="header.jsp"></jsp:include>
+<style>
+    /* Override Bootstrap Primary Color for Home Page */
+    :root {
+        --bs-primary: #2596be;
+        --bs-primary-rgb: 37, 150, 190;
+    }
+    
+    .btn-primary {
+        background-color: #2596be !important;
+        border-color: #2596be !important;
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+        background-color: #1a7a9e !important;
+        border-color: #1a7a9e !important;
+    }
+    
+    .text-primary {
+        color: #2596be !important;
+    }
+    
+    .bg-primary {
+        background-color: #2596be !important;
+    }
+    
+    /* Icon colors */
+    i.text-primary {
+        color: #2596be !important;
+    }
+    
+    /* Links */
+    a.text-primary:hover {
+        color: #1a7a9e !important;
+    }
+    
+    /* Borders */
+    .border-primary {
+        border-color: #2596be !important;
+    }
+</style>
         <!-- Carousel Start -->
         <div class="container-fluid p-0 mb-5">
             <div class="owl-carousel header-carousel position-relative">

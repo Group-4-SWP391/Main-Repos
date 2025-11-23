@@ -12,7 +12,7 @@
     <style type="text/css">
         /* ==================== MODERN UI STYLING ==================== */
         :root {
-            --primary-color: #0d6efd;
+            --primary-color: #2596be;
             --danger-color: #dc3545;
             --success-color: #198754;
             --bg-light: #e0f2f7;
@@ -265,7 +265,7 @@
         }
         /* Create Post Button */
         .btn-primary.has-icon.btn-block {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1a7a9e 100%);
             border: none;
             border-radius: 10px;
             padding: 0.75rem 1rem;
@@ -362,7 +362,7 @@
         }
 
         .modal-header.bg-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%) !important;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1a7a9e 100%) !important;
             border-radius: 16px 16px 0 0;
             padding: 1.5rem;
         }

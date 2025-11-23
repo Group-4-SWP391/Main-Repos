@@ -1,14 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câu hỏi của bạn</title>
-    <style>
+<jsp:include page="header.jsp"></jsp:include>
+<style>
         /* Modern UI Styling */
         :root {
             --primary-color: #2596be;
+            --primary-light: #e0f2f7;
+            --primary-hover: #1a7a9e;
             --danger-color: #dc3545;
             --success-color: #198754;
             --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -72,7 +69,7 @@
         }
 
         .modern-table thead {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #1a7a9e 100%);
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%);
         }
 
         .modern-table thead th {
@@ -200,123 +197,19 @@
         }
 
         /* Modal */
-        .table-responsive {
-            overflow: visible !important;
-        }
-
-        /* Fix modal display */
-        .modal {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            z-index: 1050 !important;
-            display: none !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow-x: hidden !important;
-            overflow-y: auto !important;
-            outline: 0 !important;
-        }
-
-        .modal.show {
-            display: block !important;
-        }
-
-        .modal.fade {
-            opacity: 0;
-            transition: opacity 0.15s linear;
-        }
-
-        .modal.fade.show {
-            opacity: 1 !important;
-        }
-
-        .modal-dialog {
-            position: relative !important;
-            width: auto !important;
-            margin: 1.75rem auto !important;
-            max-width: 500px !important;
-            z-index: 1051 !important;
-            pointer-events: none;
-            display: flex !important;
-            align-items: center !important;
-            min-height: calc(100% - 3.5rem);
-        }
-
-        .modal.show .modal-dialog {
-            pointer-events: auto !important;
-            transform: none !important;
-        }
-
-        .modal-dialog-centered {
-            display: flex !important;
-            align-items: center !important;
-            min-height: calc(100% - 3.5rem);
-        }
-
         .modal-content {
-            position: relative !important;
-            display: flex !important;
-            flex-direction: column !important;
-            width: 100% !important;
-            pointer-events: auto !important;
-            background-color: #fff !important;
-            background-clip: padding-box !important;
-            border: 1px solid rgba(0,0,0,.2) !important;
-            border-radius: 16px !important;
-            outline: 0 !important;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
-            z-index: 1052 !important;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1040;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000;
-        }
-
-        .modal-backdrop.fade {
-            opacity: 0;
-        }
-
-        .modal-backdrop.show {
-            opacity: 0.5 !important;
-        }
-
-        body.modal-open {
-            overflow: hidden;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .modal-header {
             border-radius: 16px 16px 0 0;
             padding: 1.5rem;
-            display: flex !important;
-            align-items: flex-start;
-            justify-content: space-between;
-            border-bottom: 1px solid #dee2e6;
         }
 
         .modal-header.bg-danger {
             background: linear-gradient(135deg, var(--danger-color) 0%, #bb2d3b 100%) !important;
-        }
-
-        .modal-body {
-            position: relative;
-            flex: 1 1 auto;
-            padding: 1.5rem;
-            display: block !important;
-        }
-
-        .modal-footer {
-            display: flex !important;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 1rem;
-            border-top: 1px solid #dee2e6;
         }
 
         /* Badge */
@@ -383,17 +276,23 @@
         .mb-3 { margin-bottom: 1rem; }
         .mb-4 { margin-bottom: 1.5rem; }
         .py-3 { padding-top: 1rem; padding-bottom: 1rem; }
-    </style>
-</head>
-<body>
-<jsp:include page="header.jsp"></jsp:include>
+        
+        /* Override Bootstrap Primary Color */
+        .bg-primary {
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%) !important;
+        }
+        
+        .text-primary {
+            color: #2596be !important;
+        }
+</style>
 
 <%
 Users user = (Users)session.getAttribute("currentUser");
 List<QuestionBank> qbs = new ExamDAO().getAllUserQuestionsByID(user.getUserID());
 session.setAttribute("backlink", "viewuserquestion.jsp");
 %>
-<div class="container-fluid py-5 mb-5 page-header" style="background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%);">
+<div class="container-fluid bg-primary py-5 mb-5 page-header">
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-10 text-center">
@@ -547,76 +446,65 @@ session.setAttribute("backlink", "viewuserquestion.jsp");
                                                 <span>Xoá</span>
                                             </button>
                                         </div>
+
+                                        <div class="modal fade" id="<%= modalId %>" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <form action="DeleteQuestionInBank" method="POST">
+                                                        <input type="hidden" name="questionID" value="<%=qb.getQuestionId()%>">
+                                                        <input type="hidden" name="subjectID" value="<%=qb.getSubjectId()%>">
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title" id="threadModalLabel">
+                                                                <i class="fas fa-exclamation-triangle mr-2"></i>Xác nhận xóa câu hỏi
+                                                            </h5>
+                                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 1;">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="text-center py-3">
+                                                                <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                                                                <p class="mb-0" style="font-size: 1.1rem; color: #495057;">
+                                                                    Bạn có chắc chắn muốn xóa câu hỏi <strong>số <%=rowNum%></strong> không?
+                                                                </p>
+                                                                <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
+                                                                    <i class="fas fa-info-circle mr-1"></i>Hành động này không thể hoàn tác!
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-light" data-dismiss="modal">
+                                                                <i class="fas fa-times mr-2"></i>Hủy
+                                                            </button>
+                                                            <button type="submit" class="btn btn-danger">
+                                                                <i class="fas fa-trash mr-2"></i>Xóa câu hỏi
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div> 
+                                            </div>                        
+                                        </div>      
                                     </td>
                                 </tr>
                                 <%
                                     rowNum++;
                                     }
                                 %>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Modals - Đặt bên ngoài table -->
-                    <%
-                    for(int i = qbs.size() - 1; i >= 0; i--){
-                        QuestionBank qb = qbs.get(i);
-                        String modalId = "threadModal" + i;
-                        // Tính rowNum giống như trong vòng lặp table
-                        int modalRowNum = qbs.size() - i;
-                    %>
-                    <div class="modal fade" id="<%= modalId %>" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel<%=i%>" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <form action="DeleteQuestionInBank" method="POST">
-                                    <input type="hidden" name="questionID" value="<%=qb.getQuestionId()%>">
-                                    <input type="hidden" name="subjectID" value="<%=qb.getSubjectId()%>">
-                                    <div class="modal-header bg-danger text-white">
-                                        <h5 class="modal-title" id="threadModalLabel<%=i%>">
-                                            <i class="fas fa-exclamation-triangle mr-2"></i>Xác nhận xóa câu hỏi
-                                        </h5>
-                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 1;">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="text-center py-3">
-                                            <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                            <p class="mb-0" style="font-size: 1.1rem; color: #495057;">
-                                                Bạn có chắc chắn muốn xóa câu hỏi <strong>số <%=modalRowNum%></strong> không?
-                                            </p>
-                                            <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
-                                                <i class="fas fa-info-circle mr-1"></i>Hành động này không thể hoàn tác!
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-light" data-dismiss="modal">
-                                            <i class="fas fa-times mr-2"></i>Hủy
-                                        </button>
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-trash mr-2"></i>Xóa câu hỏi
-                                        </button>
-                                    </div>
-                                </form>
-                            </div> 
-                        </div>                        
-                    </div>
-                    <%
-                    }
-                    %>
-                    <%
-                      }
-                      else{
-                    %>
-                    <div class="empty-state">
-                        <i class="fas fa-inbox text-muted mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
-                        <h3>Bạn chưa tạo câu hỏi nào!</h3>
-                        <p class="text-muted">Hãy thêm câu hỏi đầu tiên của bạn</p>
-                    </div>
-                    <%
-                        }
-                    %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <%
+                                  }
+                                  else{
+                                %>
+                        <div class="empty-state">
+                            <i class="fas fa-inbox text-muted mb-3" style="font-size: 4rem; opacity: 0.5;"></i>
+                            <h3>Bạn chưa tạo câu hỏi nào!</h3>
+                            <p class="text-muted">Hãy thêm câu hỏi đầu tiên của bạn</p>
+                        </div>
+                        <%
+                            }
+                        %>
                         <!--ket thuc bai dang-->
                     </div>
                 </div>
@@ -645,62 +533,6 @@ session.setAttribute("backlink", "viewuserquestion.jsp");
             var scrollpos = localStorage.getItem('scrollpos');
             if (scrollpos)
                 window.scrollTo(0, scrollpos);
-
-            // Đảm bảo modal hoạt động với Bootstrap 4
-            $(document).on('click', '[data-toggle="modal"]', function(e) {
-                e.preventDefault();
-                var target = $(this).data('target');
-                var $modal = $(target);
-                
-                // Hiển thị modal
-                $modal.modal('show');
-            });
-
-            // Đảm bảo modal hiển thị khi được mở
-            $(document).on('show.bs.modal', '.modal', function() {
-                var $modal = $(this);
-                $modal.css({
-                    'display': 'block',
-                    'z-index': '1050'
-                });
-                
-                // Đảm bảo modal dialog hiển thị
-                var $dialog = $modal.find('.modal-dialog');
-                $dialog.css({
-                    'display': 'flex',
-                    'z-index': '1051'
-                });
-                
-                // Đảm bảo modal content hiển thị
-                var $content = $modal.find('.modal-content');
-                $content.css({
-                    'display': 'flex',
-                    'z-index': '1052'
-                });
-            });
-
-            $(document).on('shown.bs.modal', '.modal', function() {
-                var $modal = $(this);
-                $modal.css({
-                    'display': 'block',
-                    'opacity': '1',
-                    'z-index': '1050'
-                });
-                
-                var $dialog = $modal.find('.modal-dialog');
-                $dialog.css({
-                    'display': 'flex',
-                    'opacity': '1',
-                    'z-index': '1051'
-                });
-                
-                var $content = $modal.find('.modal-content');
-                $content.css({
-                    'display': 'flex',
-                    'opacity': '1',
-                    'z-index': '1052'
-                });
-            });
         });
 
         window.onbeforeunload = function (e) {
@@ -710,5 +542,3 @@ session.setAttribute("backlink", "viewuserquestion.jsp");
 </script>
 
 <jsp:include page="footer.jsp"></jsp:include>
-</body>
-</html>

@@ -5,7 +5,7 @@
 
 <style>
     .table thead th {
-        background: #0d6efd;
+        background: #2596be;
         color: white;
         text-align: center;
         vertical-align: middle;

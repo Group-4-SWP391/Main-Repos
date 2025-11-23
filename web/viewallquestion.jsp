@@ -4,7 +4,9 @@
     <style>
         /* Modern UI Styling */
         :root {
-            --primary-color: #0d6efd;
+            --primary-color: #2596be;
+            --primary-light: #e0f2f7;
+            --primary-hover: #1a7a9e;
             --danger-color: #dc3545;
             --success-color: #198754;
             --warning-color: #ffc107;
@@ -77,14 +79,14 @@
         }
 
         .btn-edit-price {
-            background: var(--primary-color);
+            background: #2596be;
             color: white;
-            border-color: var(--primary-color);
+            border-color: #2596be;
         }
 
         .btn-edit-price:hover {
-            background: #0b5ed7;
-            border-color: #0b5ed7;
+            background: #1a7a9e;
+            border-color: #1a7a9e;
         }
 
         .btn-edit-difficulty {
@@ -179,7 +181,7 @@
         }
 
         .modern-table thead {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%);
         }
 
         .modern-table thead th {
@@ -262,9 +264,9 @@
         }
 
         .btn-view-detail:hover {
-            background: #0b5ed7;
+            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+            box-shadow: 0 4px 12px rgba(37,150,190,0.3);
         }
 
         .btn-delete {
@@ -287,13 +289,25 @@
             box-shadow: 0 4px 12px rgba(220,53,69,0.3);
         }
 
-        /* Modal Improvements */
+        /* Modal Improvements - CRITICAL FIX */
         .modal {
-            z-index: 1050 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 1055 !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
         }
         
         .modal-backdrop {
-            z-index: 1040 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 1050 !important;
             background-color: rgba(0,0,0,0.5) !important;
         }
 
@@ -328,48 +342,26 @@
         /* Ensure modal is visible */
         .modal.show {
             display: block !important;
-        }
-        
-        .modal.fade.show {
             opacity: 1 !important;
-        }
-        
-        /* Fix modal positioning */
-        .modal {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: auto !important;
         }
         
         .modal-dialog {
             margin: 1.75rem auto !important;
             position: relative !important;
-            z-index: 1051 !important;
+            z-index: 1056 !important;
         }
         
-        /* Ensure modal content is visible */
+        /* Ensure modal content is on top */
         .modal-content {
             position: relative !important;
-            z-index: 1052 !important;
+            z-index: 1057 !important;
             background-color: #fff !important;
         }
         
-        /* Fix backdrop */
+        /* Fix backdrop and body */
         body.modal-open {
             overflow: hidden !important;
-        }
-        
-        body.modal-open .modal-backdrop {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            z-index: 1040 !important;
-            background-color: rgba(0,0,0,0.5) !important;
+            padding-right: 0 !important;
         }
 
         /* Form Styling */
@@ -394,9 +386,9 @@
         }
 
         .form-control-modern:focus {
-            border-color: var(--primary-color);
+            border-color: #2596be;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+            box-shadow: 0 0 0 0.2rem rgba(37,150,190,0.1);
         }
 
         .form-select-modern {
@@ -409,9 +401,9 @@
         }
 
         .form-select-modern:focus {
-            border-color: var(--primary-color);
+            border-color: #2596be;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+            box-shadow: 0 0 0 0.2rem rgba(37,150,190,0.1);
         }
 
         /* Time Input Styling */
@@ -448,9 +440,9 @@
         }
 
         .time-input-field:focus {
-            border-color: var(--primary-color);
+            border-color: #2596be;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+            box-shadow: 0 0 0 0.2rem rgba(37,150,190,0.1);
         }
 
         /* Header Edit Button */
@@ -595,22 +587,46 @@
             right: 15px;
             bottom: 15px;
             z-index: 996;
-            background: var(--primary-color);
+            background: #2596be;
             width: 40px;
             height: 40px;
             border-radius: 50%;
             transition: all 0.4s;
-            box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+            box-shadow: 0 4px 12px rgba(37,150,190,0.3);
         }
 
         .back-to-top:hover {
-            background: #0b5ed7;
+            background: #1a7a9e;
             transform: translateY(-5px);
         }
 
         .back-to-top.active {
             visibility: visible;
             opacity: 1;
+        }
+
+        /* Override Bootstrap Primary Color */
+        .bg-primary {
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%) !important;
+        }
+        
+        .btn-primary {
+            background-color: #2596be !important;
+            border-color: #2596be !important;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a7a9e !important;
+            border-color: #1a7a9e !important;
+        }
+        
+        .text-primary {
+            color: #2596be !important;
+        }
+        
+        /* Page header styling */
+        .page-header {
+            background: linear-gradient(135deg, #2596be 0%, #1a7a9e 100%) !important;
         }
 
         /* Print styles */
@@ -1015,49 +1031,6 @@ int minute = (currentExam.getTimer() % 3600) / 60;
                                                 <span>Xoá</span>
                                             </button>
                                         </div>
-
-                                        <!-- Modal for deleting question -->
-                                        <div class="modal fade" id="<%= modalId %>" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <form action="DeleteQuestionInExam" method="POST">
-                                                        <input type="hidden" name="examID" value="<%=examID%>">
-                                                        <input type="hidden" name="questionID" value="<%=qb.getQuestionId()%>">
-                                                        <div class="modal-header bg-danger text-white">
-                                                            <h5 class="modal-title" id="threadModalLabel">
-                                                                <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa câu hỏi
-                                                            </h5>
-                                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 1;">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="text-center py-3">
-                                                                <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                                                <p class="mb-0" style="font-size: 1.1rem; color: #495057;">
-                                                                    Bạn có chắc chắn muốn xóa câu hỏi <strong>số <%=(i + 1)%></strong> khỏi đề thi này không?
-                                                                </p>
-                                                                <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
-                                                                    <i class="fas fa-info-circle me-1"></i>Hành động này không thể hoàn tác!
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-light" data-dismiss="modal">
-                                                                <i class="fas fa-times me-2"></i>Hủy
-                                                            </button>
-                                                            <button type="submit" class="btn btn-danger">
-                                                                <i class="fas fa-trash me-2"></i>Xóa câu hỏi
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div> 
-                                            </div>                        
-                                        </div>      
-
-
-
-
                                     </td>
                                 </tr>
                                 <%
@@ -1092,6 +1065,55 @@ int minute = (currentExam.getTimer() % 3600) / 60;
             </div>
         </div>
     </section>
+
+    <!-- All Delete Modals - Moved outside table for proper z-index -->
+    <%
+    if(qbs != null && qbs.size() > 0){
+        for(int i = 0; i < qbs.size(); i++){
+            QuestionBank qb = qbs.get(i);
+            String modalId = "threadModal" + i;
+    %>
+    <div class="modal fade" id="<%= modalId %>" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form action="DeleteQuestionInExam" method="POST">
+                    <input type="hidden" name="examID" value="<%=examID%>">
+                    <input type="hidden" name="questionID" value="<%=qb.getQuestionId()%>">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="threadModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa câu hỏi
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 1;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center py-3">
+                            <i class="fas fa-trash-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                            <p class="mb-0" style="font-size: 1.1rem; color: #495057;">
+                                Bạn có chắc chắn muốn xóa câu hỏi <strong>số <%=(i + 1)%></strong> khỏi đề thi này không?
+                            </p>
+                            <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
+                                <i class="fas fa-info-circle me-1"></i>Hành động này không thể hoàn tác!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Hủy
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Xóa câu hỏi
+                        </button>
+                    </div>
+                </form>
+            </div> 
+        </div>                        
+    </div>
+    <%
+        }
+    }
+    %>
 
 </main><!-- End #main -->
 
