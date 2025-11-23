@@ -70,56 +70,62 @@ public class UpgradeServlet extends HttpServlet {
         Users user = (Users) session.getAttribute("currentUser");
 
         if (user != null) {
-            int selectedPackage = Integer.parseInt(request.getParameter("selectedPackage"));  // Gói dịch vụ được chọn
-            int userBalance = user.getBalance();
-            int coinsRequired = 0;
+            try {
+                // Lấy giá trị gói từ form (đảm bảo form JSP gửi đúng name="selectedPackage")
+                int selectedPackagePrice = Integer.parseInt(request.getParameter("selectedPackage")); 
+                int userBalance = user.getBalance();
+                
+                // Kiểm tra số dư
+                if (userBalance >= selectedPackagePrice) {
+                    // Tính toán số dư mới
+                    int newBalance = userBalance - selectedPackagePrice;
 
-            // Xác định số coin yêu cầu tùy theo gói
-            if (selectedPackage == 20) {
-                coinsRequired = 20;
-            } else if (selectedPackage == 50) {
-                coinsRequired = 50;
-            }
-
-            // Kiểm tra số dư của người dùng
-            if (userBalance >= coinsRequired) {
-                // Cập nhật gói và số dư
-                int newBalance = userBalance - coinsRequired;
-
-                // Tính ngày hết hạn dựa trên gói
-                Calendar calendar = Calendar.getInstance();
-                if (selectedPackage == 20) {
-                    calendar.add(Calendar.MONTH, 1);  // Gói 20 Coin - Hết hạn sau 1 tháng
-                } else if (selectedPackage == 50) {
-                    calendar.add(Calendar.MONTH, 3);  // Gói 50 Coin - Hết hạn sau 3 tháng
-                }
-                Date expirationDate = new Date(calendar.getTimeInMillis());
-
-                // Cập nhật cơ sở dữ liệu
-                UserDAO userDAO = new UserDAO();
-                boolean isUpdated = userDAO.updateUserRoleAndBalance(user.getUserID(), newBalance, 2, expirationDate);  // Cập nhật số dư, role và ngày hết hạn
-                userDAO.addMoneyToBalance(coinsRequired, 1);
-                if (isUpdated) {
+                    // Tính ngày hết hạn dựa trên gói giá
+                    Calendar calendar = Calendar.getInstance();
+                    if (selectedPackagePrice == 100) { // Gói Cơ bản
+                        calendar.add(Calendar.MONTH, 1);
+                    } else if (selectedPackagePrice == 250) { // Gói VIP Pro
+                        calendar.add(Calendar.MONTH, 3);
+                    } else {
+                        // Xử lý nếu gói không hợp lệ (ví dụ: redirect lỗi)
+                        response.sendRedirect("error.jsp?msg=InvalidPackage");
+                        return;
+                    }
                     
-                    // Lưu lại thông tin đã cập nhật vào session
-                    user.setBalance(newBalance);
-                    user.setRole(2);
-                    user.setExpirationDate(expirationDate);
+                    Date expirationDate = new Date(calendar.getTimeInMillis());
 
-                    // Chuyển hướng đến trang thành công
-                    response.sendRedirect("updateDone.jsp");
+                    // Cập nhật Database
+                    UserDAO userDAO = new UserDAO();
+                    
+                    // 1. Trừ tiền và nâng cấp user hiện tại
+                    boolean isUpdated = userDAO.updateUserRoleAndBalance(user.getUserID(), newBalance, 2, expirationDate);
+                    
+                    if (isUpdated) {
+                        // 2. Cộng tiền cho Admin (ID = 1) - Tùy chọn logic kinh doanh
+                        userDAO.addMoneyToBalance(selectedPackagePrice, 1);
+
+                        // 3. CẬP NHẬT LẠI SESSION (QUAN TRỌNG)
+                        user.setBalance(newBalance);
+                        user.setRole(2);
+                        user.setExpirationDate(expirationDate);
+                        session.setAttribute("currentUser", user); // Lưu đè user mới vào session
+
+                        // Chuyển hướng thành công
+                        response.sendRedirect("updateDone.jsp");
+                    } else {
+                        request.setAttribute("errorMessage", "Lỗi hệ thống khi nâng cấp. Vui lòng thử lại.");
+                        request.getRequestDispatcher("profile.jsp").forward(request, response);
+                    }
                 } else {
-                    // Nếu cập nhật thất bại
-                    request.setAttribute("errorMessage", "Có lỗi khi nâng cấp tài khoản. Vui lòng thử lại.");
-                    request.getRequestDispatcher("error.jsp").forward(request, response);
+                    // Số dư không đủ
+                    request.setAttribute("errorMessage", "Số dư không đủ. Vui lòng nạp thêm.");
+                    request.getRequestDispatcher("recharge.jsp").forward(request, response);
                 }
-            } else {
-                // Nếu số dư không đủ
-                request.setAttribute("errorMessage", "Số dư không đủ để nâng cấp. Vui lòng nạp thêm coin.");
-                request.getRequestDispatcher("recharge.jsp").forward(request, response);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
             }
         } else {
-            // Người dùng chưa đăng nhập
             response.sendRedirect("login.jsp");
         }
     }
