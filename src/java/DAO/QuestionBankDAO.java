@@ -15,6 +15,24 @@ import model.*;
 
 public class QuestionBankDAO extends DBConnection {
 
+    // Helper method to map ResultSet to QuestionBank
+    private QuestionBank mapResultSetToQuestionBank(ResultSet rs) throws SQLException {
+        QuestionBank qb = new QuestionBank();
+        qb.setQuestionId(rs.getInt("question_id"));
+        qb.setSubjectId(rs.getInt("subject_id"));
+        qb.setQuestionContext(rs.getString("question_context"));
+        qb.setChoice1(rs.getString("question_choice_1"));
+        qb.setChoice2(rs.getString("question_choice_2"));
+        qb.setChoice3(rs.getString("question_choice_3"));
+        qb.setChoiceCorrect(rs.getString("question_choice_correct"));
+        qb.setExplain(rs.getString("question_explain"));
+        qb.setQuestionImg(rs.getString("question_img"));
+        qb.setExplainImg(rs.getString("question_explain_img"));
+        qb.setUserID(rs.getInt("userID"));
+        qb.setDifficultyLevel(rs.getInt("difficulty_level")); // Read difficulty level!
+        return qb;
+    }
+
     public List<QuestionBank> getQuestionsPageSize(int start, int pageSize) {
         List<QuestionBank> questionBanks = new ArrayList<>();
         String query = "SELECT * FROM QuestionBank ORDER BY question_id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
@@ -24,19 +42,7 @@ public class QuestionBankDAO extends DBConnection {
             ps.setInt(2, pageSize);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                QuestionBank qb = new QuestionBank();
-                qb.setQuestionId(rs.getInt(1));
-                qb.setSubjectId(rs.getInt(2));
-                qb.setQuestionContext(rs.getString(3));
-                qb.setChoice1(rs.getString(4));
-                qb.setChoice2(rs.getString(5));
-                qb.setChoice3(rs.getString(6));
-                qb.setChoiceCorrect(rs.getString(7));
-                qb.setExplain(rs.getString(8));
-                qb.setQuestionImg(rs.getString(9));
-                qb.setExplainImg(rs.getString(10));
-                qb.setUserID(rs.getInt(11));
-                questionBanks.add(qb);
+                questionBanks.add(mapResultSetToQuestionBank(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
