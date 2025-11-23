@@ -41,7 +41,7 @@ public class ResendOtpServlet extends HttpServlet {
             // Generate new OTP
             String otp = OTP.generateOTP();
             int userId = new UserDAO().getUserIdByEmail(email);
-            Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + (1 * 60 * 1000));
+            Timestamp expiryTime = new Timestamp(System.currentTimeMillis() + (5 * 60 * 1000)); // 5 minutes
             OTP.saveOtpToDatabase(userId, otp, expiryTime, false);
 
             // Send OTP to user's email

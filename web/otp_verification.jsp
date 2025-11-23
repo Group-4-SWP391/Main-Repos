@@ -88,10 +88,8 @@
                 <input type="text" name="otp" required>
                 
                 <div class="button-container">
-                    <button class="btn btn-primary" type="submit">Xác minh OTP</button>
-                    <button class="btn btn-primary" style="width: 133px" type="submit" class="resend" formnovalidate>
-                        <a href="ResendOtpServlet" style="text-decoration: none; color: black">Gửi lại</a>
-                    </button>
+                    <button class="btn btn-primary" type="submit" style="min-width: 150px; padding: 10px 20px; color: white;">Xác minh OTP</button>
+                    <a href="ResendOtpServlet" class="btn btn-primary" style="min-width: 150px; padding: 10px 20px; text-decoration: none; color: white; display: inline-block; text-align: center;">Gửi lại</a>
                 </div>
             </form>
            
