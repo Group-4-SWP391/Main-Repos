@@ -2,391 +2,510 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" import="DAO.*, java.util.*, model.*"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="header.jsp"></jsp:include>
-    <br>
 
-    <style>
-        .scrollable-tbody {
-            max-height: 400px;
-            overflow-y: auto;
-            overflow-x: auto;
-        }
-        
-        /* Fix table overflow */
-        .table {
-            table-layout: auto;
-            width: 100%;
-        }
-        
-        .table td {
-            word-wrap: break-word;
-            word-break: break-word;
-            overflow: hidden;
-        }
-        
-        /* Limit image sizes in table */
-        .table td img {
-            max-width: 200px;
-            max-height: 150px;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
-        
-        /* Modal images should also be responsive */
-        .modal-body img {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .table td img {
-                max-width: 120px;
-                max-height: 80px;
-            }
-        }
-    </style>   
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    /* --- 1. Cấu trúc chính --- */
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 15px;
+    }
+
+    /* --- 2. Cột trái: Thông tin cài đặt (Sticky) --- */
+    .exam-settings-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 20px; /* Cố định khi cuộn trang */
+        z-index: 100;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #344767;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 10px 15px;
+        border: 1px solid #dee2e6;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #06BBCC;
+        box-shadow: 0 0 0 0.2rem rgba(6, 187, 204, 0.25);
+    }
+
+    .input-group-text {
+        border-radius: 0 10px 10px 0;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+    }
+    
+    /* --- 3. Cột phải: Danh sách câu hỏi --- */
+    .question-list-container {
+        padding-bottom: 50px;
+    }
+
+    /* Card câu hỏi */
+    .question-item-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border: 1px solid #edf2f7;
+        transition: all 0.25s ease;
+        cursor: pointer;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .question-item-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        border-color: #bfebf0;
+    }
+
+    /* Checkbox ẩn, style card khi được chọn */
+    .q-checkbox {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 22px;
+        height: 22px;
+        z-index: 10;
+        cursor: pointer;
+        accent-color: #06BBCC;
+    }
+
+    .question-item-card.selected {
+        border: 2px solid #06BBCC;
+        background-color: #f4fdfe;
+    }
+
+    .q-content {
+        padding-right: 35px; /* Chừa chỗ cho checkbox */
+        font-size: 0.95rem;
+        color: #333;
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+    
+    .q-img-preview {
+        max-height: 80px;
+        border-radius: 6px;
+        border: 1px solid #eee;
+        margin-top: 8px;
+        display: block;
+    }
+
+    /* --- 4. Badges & Buttons --- */
+    .badge-level {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #06BBCC 0%, #049aa9 100%);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 187, 204, 0.3);
+        color: white;
+    }
+
+    .btn-outline-custom {
+        border: 2px solid #06BBCC;
+        color: #06BBCC;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+    .btn-outline-custom:hover {
+        background: #06BBCC;
+        color: white;
+    }
+
+    .modal-header { background: #06BBCC; color: white; }
+    .modal-content { border-radius: 15px; border: none; overflow: hidden; }
+</style>
+
 <%
 if(session.getAttribute("subjectID") != null){
     int subjectID = (Integer)session.getAttribute("subjectID");
     Subjects subject = new ExamDAO().getSubjectByID(subjectID);
+    List<QuestionBank> qbs = (List<QuestionBank>)session.getAttribute("questionList");
 %>
-<div class="row" style="border-radius: 10px">
-    <div class="col-lg-12" style="width: 1000px; margin: auto;">
-        <a class="btn btn-primary" href="choosesubject.jsp">Trở về</a>
-        <br><br>
-        <div class="card">
-            <div class="card-body">
-                <h4 class="text-primary">Tạo bài kiểm tra môn <%=subject.getSubjectName()%></h4>
-                <c:if test="${not empty error}">
-                    <p style="color:red">${error}</p>
-                </c:if>
-                <form class="row g-3" method="POST" action="CreateExam">
-                    <div class="col-md-12">
+
+<div class="main-container">
+    <div class="mb-4">
+        <a href="choosesubject.jsp" class="text-decoration-none text-secondary fw-bold">
+            <i class="bi bi-arrow-left-circle-fill me-2 text-primary"></i>Trở về chọn môn
+        </a>
+    </div>
+
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger shadow-sm rounded-3 mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> ${error}
+        </div>
+    </c:if>
+
+    <form method="POST" action="CreateExam" id="createExamForm">
+        <div class="row g-4">
+            
+            <div class="col-lg-4">
+                <div class="exam-settings-card">
+                    <h4 class="text-primary fw-bold mb-1">Cấu hình bài thi</h4>
+                    <p class="text-muted small mb-4">Môn học: <strong><%=subject.getSubjectName()%></strong></p>
+                    
+                    <div class="mb-3">
                         <label class="form-label">Tên bài kiểm tra</label>
-                        <input type="text" class="form-control" id="examName" name="examName" required>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label">Giá tiền bài kiểm tra</label>
-                        <select class="form-select" id="validationDefault04" name="price" required>
-                            <option value="0" selected>Miễn phí</option>
-                            <option value="10">10 coin</option>
-                            <option value="20">20 coin</option>
-                            <option value="30">30 coin</option>                   
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-12">
-                        <label class="form-label">Mức độ <span style="color: red;">*</span></label>
-                        <select class="form-select" name="difficultyLevel" required>
-                            <option value="1">🟢 Dễ (Easy)</option>
-                            <option value="2" selected>🟡 Vừa (Medium)</option>
-                            <option value="3">🔴 Khó (Hard)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <label class="form-label">Thời gian</label>
-                        <div class="d-flex">
-                            <input type="number" min="0" class="form-control me-2" id="validationDefault03" name="examHours" placeholder="Giờ" style="width: 10ch;" required>
-                            <input type="number" min="0" class="form-control" id="validationDefault03" name="examMinutes" placeholder="Phút" style="width: 10ch;" required>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0 bg-white"><i class="bi bi-pencil text-primary"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" id="examName" name="examName" required placeholder="VD: Kiểm tra 15 phút...">
                         </div>
                     </div>
 
-                    <h3 class="text-primary">Chọn câu hỏi:</h3>
-
-
-
-                    <div class="inner-main-body scrollable-tbody">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="text-primary" scope="col"></th>
-                                    <th class="text-primary" scope="col">Câu hỏi</th>
-                                    <th class="text-primary" scope="col">Mức độ</th>
-                                    <th class="text-primary" scope="col">Đáp án</th>
-                                    <th class="text-primary" scope="col">Tác vụ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <%
-                                List<QuestionBank> qbs = (List<QuestionBank>)session.getAttribute("questionList");
-                                String context;
-                                String answer;
-                                for(int i = qbs.size() - 1; i >= 0; i--){
-                                    QuestionBank qb = qbs.get(i);
-                                    if(qb.getQuestionContext().length() > 40){ 
-                                        context = qb.getQuestionContext().substring(0, 40) + "...";
-                                    }
-                                    else if(qb.getQuestionContext().length() == 0){
-                                        context = qb.getQuestionImg();
-                                    }
-                                    else context = qb.getQuestionContext();
-                                    if(qb.getChoiceCorrect().startsWith("uploads/docreader")){
-                                        answer = qb.getChoiceCorrect();
-                                    }
-                                    else{
-                                        if(qb.getChoiceCorrect().length() > 40) 
-                                            answer = qb.getChoiceCorrect().substring(0, 40) + "...";
-                                        else answer = qb.getChoiceCorrect();
-                                    }
-                                    String modalDetailId = "threadModalDetail" + i;
-                                %>
-                                <tr>
-                                    <td><input type="checkbox" name="selectedQuestions" value="<%=qb.getQuestionId()%>"></td>
-                                        <%
-                                        if(context.startsWith("uploads/docreader")){
-                                        %>
-                                    <td style="max-width: 500px"><img src="<%=context%>" alt="Question Image" style="max-width: 200px; height: auto;"/></td>
-                                        <%
-                                            }
-                                        else{
-                                        %>
-                                    <td><p><%=context%></p></td>
-                                    <%
-                                        }
-                                    %>
-                                    
-                                    <td class="text-center">
-                                        <%
-                                            int level = qb.getDifficultyLevel();
-                                            String badgeClass = "";
-                                            String icon = "";
-                                            String levelText = "";
-                                            
-                                            if (level == 1) {
-                                                badgeClass = "badge bg-success";
-                                                icon = "🟢";
-                                                levelText = "Dễ";
-                                            } else if (level == 2) {
-                                                badgeClass = "badge bg-warning text-dark";
-                                                icon = "🟡";
-                                                levelText = "Vừa";
-                                            } else if (level == 3) {
-                                                badgeClass = "badge bg-danger";
-                                                icon = "🔴";
-                                                levelText = "Khó";
-                                            } else {
-                                                badgeClass = "badge bg-secondary";
-                                                icon = "⚪";
-                                                levelText = "N/A";
-                                            }
-                                        %>
-                                        <span class="<%= badgeClass %>"><%= icon %> <%= levelText %></span>
-                                    </td>
-                                    
-                                    <%
-                                    if(answer.startsWith("uploads/docreader")){
-                                    %>
-                                    <td><img src="<%=answer%>" alt="Answer Image" style="max-width: 150px; height: auto;"/></td>
-                                        <%
-                                            }
-                                        else{
-                                        %>
-                                    <td><%=answer%></td>
-                                    <%
-                                        }
-                                    %>
-                                    <td style="display: flex; flex-direction: row; text-align: center">
-                                        <button
-                                            class="btn btn-primary has-icon btn-block"
-                                            type="button"
-                                            data-toggle="modal"
-                                            data-target="#<%=modalDetailId%>"
-                                            >
-                                            Xem chi tiết
-                                        </button>
-                                        <div class="modal fade" id="<%=modalDetailId%>" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content" style="width: 100%; margin: auto">
-                                                    <div class="modal-header d-flex align-items-center bg-primary text-white">
-                                                        <h6 class="modal-title mb-0" id="threadModalLabel">Chi tiết câu hỏi</h6>
-                                                    </div>
-                                                    <div class="modal-body" style="text-align: left;"> 
-                                                        <p style="font-weight: bold; overflow-wrap:break-word;">Câu hỏi: <span style="font-weight: 100"><%=qb.getQuestionContext()%></span></p>
-                                                            <%
-                                                            if(qb.getQuestionImg() != null){
-                                                            %>
-                                                        <img src="<%=qb.getQuestionImg()%>" style="max-width: 100%; height: auto;"/>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <p style="font-weight: bold">Câu trả lời</p>
-                                                        <%
-                                                        if(qb.getChoice1().startsWith("uploads/docreader")){
-                                                        %>
-                                                        <br><span style="font-weight: bold">A. </span><img src="<%=qb.getChoice1()%>" height="30" alt="alt"/>
-                                                        <%
-                                                            }
-                                                        else{
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">A:</label> <%=qb.getChoice1()%></p>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <%
-                                                        if(qb.getChoice2().startsWith("uploads/docreader")){
-                                                        %>
-                                                        <br><span style="font-weight: bold">B. </span><img src="<%=qb.getChoice2()%>" height="30" alt="alt"/>
-                                                        <%
-                                                            }
-                                                        else{
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">B:</label> <%=qb.getChoice2()%></p>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <%
-                                                        if(qb.getChoice3().startsWith("uploads/docreader")){
-                                                        %>
-                                                        <br><span style="font-weight: bold">D. </span><img src="<%=qb.getChoice3()%>" height="30" alt="alt"/>
-                                                        <%
-                                                            }
-                                                        else{
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">C:</label> <%=qb.getChoice3()%></p>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <%
-                                                        if(qb.getChoiceCorrect().startsWith("uploads/docreader")){
-                                                        %>
-                                                        <br><span style="font-weight: bold">D. </span><img src="<%=qb.getChoiceCorrect()%>" height="30" alt="alt"/>
-                                                        <%
-                                                            }
-                                                        else{
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">D:</label> <%=qb.getChoiceCorrect()%></p>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <%
-                                                        if(qb.getChoiceCorrect().startsWith("uploads/docreader")){
-                                                        %>
-                                                        <br><span style="font-weight: bold">Đáp án: </span><img src="<%=qb.getChoiceCorrect()%>" height="30" alt="alt"/>
-                                                        <%
-                                                            }
-                                                        else{
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">Đáp án:</label> <%=qb.getChoiceCorrect()%></p>
-                                                        <%
-                                                            }
-                                                        %>
-                                                        <p style="overflow-wrap:break-word;"><label style="font-weight: bold">Giải thích:</label> <%=qb.getExplain()%></p>
-                                                        <%
-                                                        if(qb.getExplainImg() != null){
-                                                        %>
-                                                        <img src="<%=qb.getExplainImg()%>" style="max-width: 100%; height: auto;"/>
-                                                        <%
-                                                            }
-                                                        %>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <input type="button" class="btn btn-primary" data-dismiss="modal"value="Xác nhận">
-                                                    </div>
-                                                </div> 
-                                            </div>                        
-                                        </div> 
-                                    </td>
-                                </tr>
-                                <%
-                                    }
-                                %>
-                            </tbody>
-
-                        </table>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Giá tiền</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="price" min="0" value="0" required placeholder="0">
+                                <span class="input-group-text bg-light">Coin</span>
+                            </div>
+                            <div class="form-text text-muted small" style="font-size: 0.7rem; margin-top: 3px;">Nhập 0 để miễn phí</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mức độ <span class="text-danger">*</span></label>
+                            <select class="form-select" name="difficultyLevel" required>
+                                <option value="1">🟢 Dễ</option>
+                                <option value="2" selected>🟡 Vừa</option>
+                                <option value="3">🔴 Khó</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Thời gian làm bài</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <input type="number" min="0" class="form-control text-center" name="examHours" placeholder="0" required>
+                                    <span class="input-group-text bg-light">Giờ</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <input type="number" min="0" class="form-control text-center" name="examMinutes" placeholder="0" required>
+                                    <span class="input-group-text bg-light">Phút</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25 my-4">
+
                     <input type="hidden" name="subjectID" value="<%=subject.getSubjectID()%>">
-                    <button class="btn btn-primary has-icon btn-block" type="submit">Tạo bài kiểm tra</button>
-                    <button
-                        class="btn btn-primary has-icon btn-block"
-                        type="button"
-                        data-toggle="modal"
-                        data-target="#threadModal"
-                        >
-                        Tạo đề ngẫu nhiên
+                    
+                    <button type="submit" class="btn-primary-custom mb-3">
+                        <i class="bi bi-check2-circle me-2"></i> Hoàn tất tạo bài
                     </button>
-                </form>
-                <div class="modal fade" id="threadModal" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content" style="width: 500px; margin: auto">
-                            <form action="CreateRandomExam" method="POST">
-                                <div class="modal-header d-flex align-items-center bg-primary text-white">
-                                    <h6 class="modal-title mb-0" id="threadModalLabel">Tạo đề <%=subject.getSubjectName()%> ngẫu nhiên</h6>
+                    
+                    <button type="button" class="btn-outline-custom" data-bs-toggle="modal" data-bs-target="#randomExamModal">
+                        <i class="bi bi-magic me-2"></i> Tạo đề ngẫu nhiên
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1">Ngân hàng câu hỏi</h5>
+                        <small class="text-muted">Đã tìm thấy <strong><%=qbs != null ? qbs.size() : 0%></strong> câu hỏi khả dụng</small>
+                    </div>
+                </div>
+
+                <div class="question-list-container">
+                    <%
+                    if (qbs != null && qbs.size() > 0) {
+                        for(int i = qbs.size() - 1; i >= 0; i--){
+                            QuestionBank qb = qbs.get(i);
+                            String context = qb.getQuestionContext();
+                            String answer = qb.getChoiceCorrect();
+                            String modalId = "modalDetail" + i;
+                            
+                            String displayContext = (context != null && context.length() > 120) ? context.substring(0, 120) + "..." : context;
+                            if(displayContext == null || displayContext.isEmpty()) displayContext = "(Câu hỏi dạng hình ảnh)";
+                            
+                            int level = qb.getDifficultyLevel();
+                            String badgeClass = "bg-secondary";
+                            String levelText = "N/A";
+                            if(level == 1) { badgeClass = "bg-success"; levelText = "Dễ"; }
+                            else if(level == 2) { badgeClass = "bg-warning text-dark"; levelText = "Vừa"; }
+                            else if(level == 3) { badgeClass = "bg-danger"; levelText = "Khó"; }
+                    %>
+                    
+                    <div class="question-item-card" onclick="toggleSelect(this)">
+                        <input type="checkbox" class="q-checkbox form-check-input" name="selectedQuestions" value="<%=qb.getQuestionId()%>" onclick="event.stopPropagation(); toggleCardStyle(this);">
+                        
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge badge-level <%=badgeClass%> me-2"><%=levelText%></span>
+                            <small class="text-muted fw-bold">#<%=i+1%></small>
+                        </div>
+
+                        <div class="q-content">
+                            <%= displayContext %>
+                            <% 
+                            if(context != null && (context.startsWith("uploads/docreader") || qb.getQuestionImg() != null)) { 
+                                String imgSrc = context.startsWith("uploads") ? context : qb.getQuestionImg();
+                                if(imgSrc != null && !imgSrc.isEmpty()) {
+                            %>
+                                <img src="<%=imgSrc%>" class="q-img-preview">
+                            <%  } 
+                            } %>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                            <div class="text-success small">
+                                <i class="bi bi-check-circle-fill me-1"></i> 
+                                <strong>Đáp án:</strong> 
+                                <% if(answer != null && answer.startsWith("uploads/docreader")) { %>
+                                    <span class="text-muted fst-italic">[Hình ảnh]</span>
+                                <% } else { %>
+                                    <%= (answer != null && answer.length() > 40) ? answer.substring(0, 40) + "..." : answer %>
+                                <% } %>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-light text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#<%=modalId%>" onclick="event.stopPropagation();">
+                                Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="<%=modalId%>" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Chi tiết câu hỏi #<%=i+1%></h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <%
-                                    if(qbs.size() > 0){
-                                        int max = qbs.size();
-                                    %>
-                                    <label for="examName">Tên đề thi:</label>
-                                    <input type="text" id="examName" name="examName" required>
-                                    <input type="hidden" name="subjectID" value="<%=subjectID%>"/>
-                                    <div style="display: flex; align-items: center;">
-                                        <label for="examName" style="margin-right: 10px; margin-top: 20px">Tổng thời gian làm bài:</label>
-                                        <div style="display: flex; align-items: center;">
-                                            <div style="display: flex; flex-direction: column; align-items: center; margin-right: 10px;">
-                                                <label for="examMinutes" style="text-align: center;">Giờ</label>
-                                                <input type="number" name="examHours" min="0" required style="width: 50px; text-align: center;">
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold text-primary">Nội dung câu hỏi:</h6>
+                                        <p class="fs-5"><%=qb.getQuestionContext()%></p>
+                                        <% if(qb.getQuestionImg() != null) { %>
+                                            <div class="text-center bg-light p-2 rounded">
+                                                <img src="<%=qb.getQuestionImg()%>" class="img-fluid rounded" style="max-height: 250px;">
                                             </div>
-                                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                                <label for="examSeconds" style="text-align: center;">Phút</label>
-                                                <input type="number" name="examMinutes" min="0" required style="width: 50px; text-align: center;">
+                                        <% } %>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <div class="row g-3 mb-3">
+                                        <% 
+                                        String[] choices = {qb.getChoice1(), qb.getChoice2(), qb.getChoice3(), qb.getChoiceCorrect()};
+                                        String[] labels = {"A", "B", "C", "D"};
+                                        for(int k=0; k<3; k++) { 
+                                            String c = choices[k];
+                                            if(c != null) {
+                                        %>
+                                        <div class="col-md-6">
+                                            <div class="p-2 border rounded bg-light h-100">
+                                                <span class="fw-bold text-secondary"><%=labels[k]%>:</span>
+                                                <% if(c.startsWith("uploads/docreader")) { %>
+                                                    <img src="<%=c%>" style="max-height:40px;">
+                                                <% } else { %>
+                                                    <%=c%>
+                                                <% } %>
                                             </div>
                                         </div>
+                                        <% } } %>
                                     </div>
-                                    <br>
-                                    <label class="form-label">Giá tiền bài kiểm tra</label>
-                                    <select class="form-select" id="validationDefault04" name="price" required>
-                                        <option value="0" selected>Miễn phí</option>
-                                        <option value="10">10 coin</option>
-                                        <option value="20">20 coin</option>
-                                        <option value="30">30 coin</option>                   
-                                    </select>
-                                    <br>
-                                    
-                                    <label class="form-label">Mức độ <span style="color: red;">*</span></label>
-                                    <select class="form-select" name="difficultyLevel" required>
-                                        <option value="1">🟢 Dễ (Easy)</option>
-                                        <option value="2" selected>🟡 Vừa (Medium)</option>
-                                        <option value="3">🔴 Khó (Hard)</option>
-                                    </select>
-                                    <br>
-                                    
-                                    <label for="numQuestions">Số lượng câu hỏi(1-<%=max%>):</label>
-                                    <input type="number" id="numQuestions" name="numQuestions" min="1" max="<%=max%>" value="1">
-                                    <%
-                                        }
-                                    else{
-                                    %>
-                                    <p>Không còn câu hỏi nào trong ngân hàng câu hỏi!</p>
-                                    <%
-                                        }
-                                    %>
+
+                                    <div class="alert alert-success d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                                        <div>
+                                            <strong>Đáp án đúng:</strong>
+                                            <% if(qb.getChoiceCorrect().startsWith("uploads/docreader")) { %>
+                                                <img src="<%=qb.getChoiceCorrect()%>" style="max-height:40px;">
+                                            <% } else { %>
+                                                <%=qb.getChoiceCorrect()%>
+                                            <% } %>
+                                        </div>
+                                    </div>
+
+                                    <% if(qb.getExplain() != null && !qb.getExplain().isEmpty()) { %>
+                                        <div class="bg-light p-3 rounded border border-info">
+                                            <strong class="text-info"><i class="bi bi-lightbulb me-1"></i> Giải thích:</strong>
+                                            <p class="mb-0 mt-1"><%=qb.getExplain()%></p>
+                                            <% if(qb.getExplainImg() != null) { %>
+                                                <img src="<%=qb.getExplainImg()%>" class="mt-2 img-fluid rounded" style="max-height: 150px;">
+                                            <% } %>
+                                        </div>
+                                    <% } %>
                                 </div>
                                 <div class="modal-footer">
-                                    <input type="button" class="btn btn-light" data-dismiss="modal" style="background-color: red" value="Huỷ">
-                                    <%
-                                    if(qbs.size() > 0){
-                                    %>
-                                    <input type="submit" class="btn btn-primary" style="background-color: #007bff" value="Tạo đề thi"/>
-                                    <%
-                                        }
-                                    %>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                 </div>
-                            </form>
-                        </div> 
-                    </div>                        
-                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    <% 
+                        }
+                    } else { 
+                    %>
+                        <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+                            <i class="bi bi-inbox display-1 text-muted opacity-25"></i>
+                            <p class="mt-3 text-muted fw-bold">Chưa có câu hỏi nào trong ngân hàng.</p>
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
-        <%
-            }
-        %>
+    </form>
+</div>
+
+<div class="modal fade" id="randomExamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="CreateRandomExam" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-shuffle me-2"></i>Tạo đề ngẫu nhiên</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <% if(qbs != null && qbs.size() > 0){ int max = qbs.size(); %>
+                        <input type="hidden" name="subjectID" value="<%=subjectID%>"/>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên đề thi</label>
+                            <input type="text" class="form-control" name="examName" required placeholder="Nhập tên đề thi...">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Giá tiền</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="price" min="0" value="0" required placeholder="0">
+                                    <span class="input-group-text">Coin</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Độ khó</label>
+                                <select class="form-select" name="difficultyLevel" required>
+                                    <option value="1">Dễ</option>
+                                    <option value="2" selected>Vừa</option>
+                                    <option value="3">Khó</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label class="form-label fw-bold">Thời gian làm bài</label>
+                        <div class="input-group mb-3">
+                            <input type="number" name="examHours" min="0" class="form-control text-center" required placeholder="Giờ">
+                            <span class="input-group-text">:</span>
+                            <input type="number" name="examMinutes" min="0" class="form-control text-center" required placeholder="Phút">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-flex justify-content-between">
+                                <span>Số lượng câu hỏi</span>
+                                <span class="text-muted small fw-normal">(Tối đa: <%=max%>)</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <button class="btn btn-outline-secondary" type="button" onclick="stepDown()">
+                                    <i class="bi bi-dash-lg"></i>
+                                </button>
+                                <input type="number" id="numQ" name="numQuestions" class="form-control text-center fw-bold text-primary" min="1" max="<%=max%>" value="1" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="stepUp()">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                            <div class="form-text small mt-2">Hệ thống sẽ lấy ngẫu nhiên số lượng câu hỏi này từ ngân hàng.</div>
+                        </div>
+
+                        <script>
+                            // Hàm xử lý tăng giảm số lượng
+                            function stepUp() {
+                                var input = document.getElementById('numQ');
+                                var max = <%=max%>;
+                                if (parseInt(input.value) < max) {
+                                    input.stepUp();
+                                }
+                            }
+                            
+                            function stepDown() {
+                                var input = document.getElementById('numQ');
+                                if (parseInt(input.value) > 1) {
+                                    input.stepDown();
+                                }
+                            }
+                        </script>
+                        <% } else { %>
+                        <div class="text-center">
+                            <p class="text-danger mb-0">Ngân hàng câu hỏi trống, không thể tạo đề ngẫu nhiên!</p>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <% if(qbs != null && qbs.size() > 0){ %>
+                        <button type="submit" class="btn btn-primary fw-bold">Xác nhận tạo</button>
+                    <% } %>
+                </div>
+            </form>
+        </div>
     </div>
-</div>    
-</div>    
+</div>
+
+<script>
+    // Script xử lý chọn thẻ (Card)
+    function toggleSelect(card) {
+        var checkbox = card.querySelector('.q-checkbox');
+        checkbox.checked = !checkbox.checked;
+        toggleCardStyle(checkbox);
+    }
+
+    function toggleCardStyle(checkbox) {
+        var card = checkbox.closest('.question-item-card');
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+</script>
+
+<%
+    }
+%>
 
 <jsp:include page="footer.jsp"></jsp:include>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
