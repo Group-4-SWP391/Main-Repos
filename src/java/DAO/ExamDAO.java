@@ -503,6 +503,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 questionList.add(qb);
             }
         } catch (SQLException e) {
@@ -534,6 +535,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 questionList.add(qb);
             }
         } catch (SQLException e) {
@@ -565,6 +567,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 questionList.add(qb);
             }
         } catch (SQLException e) {
@@ -583,19 +586,7 @@ public class ExamDAO extends DBConnection {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                QuestionBank qb = new QuestionBank();
-                qb.setQuestionId(rs.getInt(1));
-                qb.setSubjectId(rs.getInt(2));
-                qb.setQuestionContext(rs.getString(3));
-                qb.setChoice1(rs.getString(4));
-                qb.setChoice2(rs.getString(5));
-                qb.setChoice3(rs.getString(6));
-                qb.setChoiceCorrect(rs.getString(7));
-                qb.setExplain(rs.getString(8));
-                qb.setQuestionImg(rs.getString(9));
-                qb.setExplainImg(rs.getString(10));
-                qb.setUserID(rs.getInt(11));
-                questionList.add(qb);
+                questionList.add(mapResultSetToQuestionBank(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -654,6 +645,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 questionList.add(qb);
             }
         } catch (SQLException e) {
@@ -683,12 +675,31 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 questionList.add(qb);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return questionList;
+    }
+
+    // Helper method to map ResultSet to QuestionBank
+    private QuestionBank mapResultSetToQuestionBank(ResultSet rs) throws SQLException {
+        QuestionBank qb = new QuestionBank();
+        qb.setQuestionId(rs.getInt("question_id"));
+        qb.setSubjectId(rs.getInt("subject_id"));
+        qb.setQuestionContext(rs.getString("question_context"));
+        qb.setChoice1(rs.getString("question_choice_1"));
+        qb.setChoice2(rs.getString("question_choice_2"));
+        qb.setChoice3(rs.getString("question_choice_3"));
+        qb.setChoiceCorrect(rs.getString("question_choice_correct"));
+        qb.setExplain(rs.getString("question_explain"));
+        qb.setQuestionImg(rs.getString("question_img"));
+        qb.setExplainImg(rs.getString("question_explain_img"));
+        qb.setUserID(rs.getInt("userID"));
+        qb.setDifficultyLevel(rs.getInt("difficulty_level")); // Read difficulty level!
+        return qb;
     }
 
     // Get all questions without exam ID
@@ -699,19 +710,7 @@ public class ExamDAO extends DBConnection {
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                QuestionBank qb = new QuestionBank();
-                qb.setQuestionId(rs.getInt(1));
-                qb.setSubjectId(rs.getInt(2));
-                qb.setQuestionContext(rs.getString(3));
-                qb.setChoice1(rs.getString(4));
-                qb.setChoice2(rs.getString(5));
-                qb.setChoice3(rs.getString(6));
-                qb.setChoiceCorrect(rs.getString(7));
-                qb.setExplain(rs.getString(8));
-                qb.setQuestionImg(rs.getString(9));
-                qb.setExplainImg(rs.getString(10));
-                qb.setUserID(rs.getInt(11));
-                list.add(qb);
+                list.add(mapResultSetToQuestionBank(rs));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -740,6 +739,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -953,6 +953,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -988,6 +989,7 @@ public class ExamDAO extends DBConnection {
                     qb.setQuestionImg(rs.getString(9));
                     qb.setExplainImg(rs.getString(10));
                     qb.setUserID(rs.getInt(11));
+                    qb.setDifficultyLevel(rs.getInt(12));
                     list.add(qb);
                 }
             } catch (Exception e) {
@@ -1016,6 +1018,7 @@ public class ExamDAO extends DBConnection {
                     qb.setQuestionImg(rs.getString(9));
                     qb.setExplainImg(rs.getString(10));
                     qb.setUserID(rs.getInt(11));
+                    qb.setDifficultyLevel(rs.getInt(12));
                     list.add(qb);
                 }
             } catch (Exception e) {
@@ -1136,6 +1139,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -1163,6 +1167,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -1192,6 +1197,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -1222,6 +1228,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
                 list.add(qb);
             }
         } catch (Exception e) {
@@ -1253,6 +1260,7 @@ public class ExamDAO extends DBConnection {
                     qb.setQuestionImg(rs.getString(9));
                     qb.setExplainImg(rs.getString(10));
                     qb.setUserID(rs.getInt(11));
+                    qb.setDifficultyLevel(rs.getInt(12));
                     list.add(qb);
                 }
             } catch (Exception e) {
@@ -1267,19 +1275,7 @@ public class ExamDAO extends DBConnection {
             ps.setInt(2, subjectID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                QuestionBank qb = new QuestionBank();
-                qb.setQuestionId(rs.getInt(1));
-                qb.setSubjectId(rs.getInt(2));
-                qb.setQuestionContext(rs.getString(3));
-                qb.setChoice1(rs.getString(4));
-                qb.setChoice2(rs.getString(5));
-                qb.setChoice3(rs.getString(6));
-                qb.setChoiceCorrect(rs.getString(7));
-                qb.setExplain(rs.getString(8));
-                qb.setQuestionImg(rs.getString(9));
-                qb.setExplainImg(rs.getString(10));
-                qb.setUserID(rs.getInt(11));
-                list.add(qb);
+                list.add(mapResultSetToQuestionBank(rs));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -1313,6 +1309,7 @@ public class ExamDAO extends DBConnection {
                     qb.setQuestionImg(rs.getString(9));
                     qb.setExplainImg(rs.getString(10));
                     qb.setUserID(rs.getInt(11));
+                    qb.setDifficultyLevel(rs.getInt(12));
                     list.add(qb);
                 }
             } catch (Exception e) {
@@ -1320,7 +1317,7 @@ public class ExamDAO extends DBConnection {
             }
         }
 
-        query = "select * from QuestionBank left join ExamQuestion on QuestionBank.question_id = ExamQuestion.question_id and exam_id = ? WHERE ExamQuestion.question_id IS NULL and subject_id = ? and userID = ?";
+        query = "select QuestionBank.* from QuestionBank left join ExamQuestion on QuestionBank.question_id = ExamQuestion.question_id and exam_id = ? WHERE ExamQuestion.question_id IS NULL and subject_id = ? and userID = ?";
         try (Connection con = getConnection()) {
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, examID);
@@ -1328,19 +1325,7 @@ public class ExamDAO extends DBConnection {
             ps.setInt(3, userID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                QuestionBank qb = new QuestionBank();
-                qb.setQuestionId(rs.getInt(1));
-                qb.setSubjectId(rs.getInt(2));
-                qb.setQuestionContext(rs.getString(3));
-                qb.setChoice1(rs.getString(4));
-                qb.setChoice2(rs.getString(5));
-                qb.setChoice3(rs.getString(6));
-                qb.setChoiceCorrect(rs.getString(7));
-                qb.setExplain(rs.getString(8));
-                qb.setQuestionImg(rs.getString(9));
-                qb.setExplainImg(rs.getString(10));
-                qb.setUserID(rs.getInt(11));
-                list.add(qb);
+                list.add(mapResultSetToQuestionBank(rs));
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -1368,6 +1353,7 @@ public class ExamDAO extends DBConnection {
                 qb.setQuestionImg(rs.getString(9));
                 qb.setExplainImg(rs.getString(10));
                 qb.setUserID(rs.getInt(11));
+                qb.setDifficultyLevel(rs.getInt(12));
             }
         } catch (Exception e) {
             System.out.println(e);
