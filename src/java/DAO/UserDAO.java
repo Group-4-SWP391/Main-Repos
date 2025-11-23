@@ -338,7 +338,7 @@ public class UserDAO extends DBConnection {
 
                 // Nếu ngày hết hạn đã qua, cập nhật role thành 3
                 if (expirationDate != null && expirationDate.before(currentDate)) {
-                    String updateRoleSql = "UPDATE users SET role = 3 WHERE userID = ?";
+                    String updateRoleSql = "UPDATE users SET roles = 3 WHERE userID = ?";
                     try (PreparedStatement updatePs = conn.prepareStatement(updateRoleSql)) {
                         updatePs.setInt(1, userID);
                         updatePs.executeUpdate();
