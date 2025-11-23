@@ -13,7 +13,11 @@ import java.util.logging.Logger;
 
 public class DBConnection {
 
+<<<<<<< Updated upstream
     public static String url = "jdbc:sqlserver://DUONGCHOU;databaseName=THI247;encrypt=true;trustServerCertificate=true";
+=======
+    public static String url = "jdbc:sqlserver://LAPTOP-DDOVVB27\\SQLEXPRESS;databaseName=THI247;encrypt=true;trustServerCertificate=true";
+>>>>>>> Stashed changes
     public static String user = "sa";
     public static String password = "123";
 
