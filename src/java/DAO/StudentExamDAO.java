@@ -61,6 +61,10 @@ public class StudentExamDAO {
                 exam.setSubjectID(rs.getInt(5));
                 exam.setTimer(rs.getInt(6));
                 exam.setPrice(rs.getInt(7));
+                exam.setLikes(rs.getInt(8));
+                exam.setViews(rs.getInt(9));
+                exam.setIsAprroved(rs.getBoolean(10));
+                exam.setDifficultyLevel(rs.getInt(11)); // Read difficulty level!
                 list.add(exam);
             }
         } catch (Exception e) {
@@ -86,6 +90,10 @@ public class StudentExamDAO {
                 exam.setSubjectID(rs.getInt(5));
                 exam.setTimer(rs.getInt(6));
                 exam.setPrice(rs.getInt(7));
+                exam.setLikes(rs.getInt(8));
+                exam.setViews(rs.getInt(9));
+                exam.setIsAprroved(rs.getBoolean(10));
+                exam.setDifficultyLevel(rs.getInt(11)); // Read difficulty level!
                 list.add(exam);
             }
         } catch (Exception e) {

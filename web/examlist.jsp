@@ -91,6 +91,93 @@
     .text-green { color: #28a745 !important; }
     .text-primary-custom { color: #06BBCC !important; }
 
+    /* 5.5. Difficulty Badges - Modern Style */
+    .difficulty-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 18px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        border: 2px solid transparent;
+        text-transform: uppercase;
+    }
+
+    .difficulty-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Easy Level - Green Gradient */
+    .difficulty-easy {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white !important;
+        border-color: #11998e;
+    }
+
+    .difficulty-easy:hover {
+        background: linear-gradient(135deg, #0d7a6f 0%, #2dd164 100%);
+        box-shadow: 0 4px 16px rgba(17, 153, 142, 0.4);
+    }
+
+    /* Medium Level - Orange/Yellow Gradient */
+    .difficulty-medium {
+        background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+        color: #ffffff !important;
+        border-color: #f39c12;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .difficulty-medium:hover {
+        background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+        box-shadow: 0 4px 16px rgba(243, 156, 18, 0.4);
+    }
+
+    /* Hard Level - Red Gradient */
+    .difficulty-hard {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white !important;
+        border-color: #eb3349;
+    }
+
+    .difficulty-hard:hover {
+        background: linear-gradient(135deg, #c92a3a 0%, #e03e2f 100%);
+        box-shadow: 0 4px 16px rgba(235, 51, 73, 0.4);
+    }
+
+    /* Unknown/N/A Level - Gray */
+    .difficulty-unknown {
+        background: linear-gradient(135deg, #95a5a6 0%, #bdc3c7 100%);
+        color: white !important;
+        border-color: #95a5a6;
+    }
+
+    /* Modal Difficulty Badge - Slightly Larger */
+    .modal-body .difficulty-badge {
+        padding: 8px 16px;
+        font-size: 0.95rem;
+    }
+
+    /* Badge Container - Better Spacing */
+    .badges-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* Responsive - Smaller on mobile */
+    @media (max-width: 576px) {
+        .difficulty-badge {
+            font-size: 0.75rem;
+            padding: 6px 12px;
+        }
+    }
+
     /* 6. Pagination */
     .page-link {
         border-radius: 50% !important;
@@ -269,7 +356,7 @@
                     <div class="course-content">
                         <h5 class="mb-2 fw-bold text-dark"><%= exam.getExamName() %></h5>
                         
-                        <div class="mb-3">
+                        <div class="mb-3 badges-container justify-content-center">
                             <% if(price == 0){ %>
                                 <span class="price-badge text-primary-custom">Miễn phí</span>
                             <% } else if(new StudentExamDAO().checkExamPay(user.getUserID(), exam.getExamID())){ %>
@@ -277,6 +364,38 @@
                             <% } else { %>
                                 <span class="price-badge text-warning"><%= price %> Coin</span>
                             <% } %>
+                            
+                            <%
+                                // Hiển thị độ khó với style cải tiến
+                                int diffLevel = exam.getDifficultyLevel();
+                                String diffBadgeClass = "";
+                                String diffText = "";
+                                String diffTooltip = "";
+                                
+                                if (diffLevel == 1) {
+                                    diffBadgeClass = "difficulty-badge difficulty-easy";
+                                    diffText = "Dễ";
+                                    diffTooltip = "Phù hợp cho người mới bắt đầu";
+                                } else if (diffLevel == 2) {
+                                    diffBadgeClass = "difficulty-badge difficulty-medium";
+                                    diffText = "Vừa";
+                                    diffTooltip = "Yêu cầu kiến thức cơ bản đến trung bình";
+                                } else if (diffLevel == 3) {
+                                    diffBadgeClass = "difficulty-badge difficulty-hard";
+                                    diffText = "Khó";
+                                    diffTooltip = "Dành cho người có kinh nghiệm";
+                                } else {
+                                    diffBadgeClass = "difficulty-badge difficulty-unknown";
+                                    diffText = "N/A";
+                                    diffTooltip = "Độ khó chưa được xác định";
+                                }
+                            %>
+                            <span class="<%= diffBadgeClass %>" 
+                                  data-bs-toggle="tooltip" 
+                                  data-bs-placement="top" 
+                                  title="<%= diffTooltip %>">
+                                <%= diffText %>
+                            </span>
                         </div>
                         
                         <div class="d-flex justify-content-between text-muted small px-3">
@@ -317,6 +436,12 @@
                                     <ul class="list-unstyled">
                                         <li class="mb-2"><strong><i class="bi bi-book me-2 text-primary"></i>Tên bài:</strong> <%= exam.getExamName() %></li>
                                         <li class="mb-2"><strong><i class="bi bi-tag me-2 text-primary"></i>Giá:</strong> <%= price == 0 ? "Miễn phí" : price + " Coin" %></li>
+                                        <li class="mb-2">
+                                            <strong><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Độ khó:</strong> 
+                                            <span class="<%= diffBadgeClass %>">
+                                                <%= diffText %>
+                                            </span>
+                                        </li>
                                         <li class="mb-2"><strong><i class="bi bi-clock me-2 text-primary"></i>Thời gian:</strong> <%= String.format("%02d:%02d:%02d", hours, minutes, seconds) %></li>
                                         <li class="mb-2"><strong><i class="bi bi-person-badge me-2 text-primary"></i>Tác giả:</strong> <%= creator != null ? creator.getUsername() : "Unknown" %></li>
                                         <li><strong><i class="bi bi-calendar-event me-2 text-primary"></i>Ngày tạo:</strong> <%= exam.getCreateDate() %></li>
@@ -387,6 +512,19 @@
 <%
     }
 %>
+
+<script>
+    // Initialize Bootstrap tooltips for difficulty badges
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                trigger: 'hover',
+                delay: { show: 300, hide: 100 }
+            });
+        });
+    });
+</script>
 
 <jsp:include page="footer.jsp"></jsp:include>
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

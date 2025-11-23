@@ -270,6 +270,7 @@ public class ExamDAO extends DBConnection {
                 exam.setLikes(rs.getInt(8));
                 exam.setViews(rs.getInt(9));
                 exam.setIsAprroved(rs.getBoolean(10));
+                exam.setDifficultyLevel(rs.getInt(11));
                 exams.add(exam);
             }
         } catch (SQLException e) {
@@ -296,6 +297,7 @@ public class ExamDAO extends DBConnection {
                 exam.setLikes(rs.getInt(8));
                 exam.setViews(rs.getInt(9));
                 exam.setIsAprroved(rs.getBoolean(10));
+                exam.setDifficultyLevel(rs.getInt(11));
                 exams.add(exam);
             }
         } catch (SQLException e) {
@@ -335,6 +337,7 @@ public class ExamDAO extends DBConnection {
                 exam.setLikes(rs.getInt(8));
                 exam.setViews(rs.getInt(9));
                 exam.setIsAprroved(rs.getBoolean(10));
+                exam.setDifficultyLevel(rs.getInt(11));
                 exams.add(exam);
             }
         } catch (SQLException e) {

@@ -1,0 +1,185 @@
+/* ========================================
+   DIFFICULTY BADGE STYLES
+   Modern, elegant difficulty level badges
+   ======================================== */
+
+/* Base Badge Style */
+.difficulty-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    border: 2px solid transparent;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.difficulty-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Easy Level - Green Gradient */
+.difficulty-easy {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white !important;
+    border-color: #11998e;
+}
+
+.difficulty-easy:hover {
+    background: linear-gradient(135deg, #0d7a6f 0%, #2dd164 100%);
+    box-shadow: 0 4px 16px rgba(17, 153, 142, 0.4);
+}
+
+/* Medium Level - Orange/Yellow Gradient */
+.difficulty-medium {
+    background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+    color: #ffffff !important;
+    border-color: #f39c12;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.difficulty-medium:hover {
+    background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+    box-shadow: 0 4px 16px rgba(243, 156, 18, 0.4);
+}
+
+/* Hard Level - Red Gradient */
+.difficulty-hard {
+    background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    color: white !important;
+    border-color: #eb3349;
+}
+
+.difficulty-hard:hover {
+    background: linear-gradient(135deg, #c92a3a 0%, #e03e2f 100%);
+    box-shadow: 0 4px 16px rgba(235, 51, 73, 0.4);
+}
+
+/* Unknown/N/A Level - Gray */
+.difficulty-unknown {
+    background: linear-gradient(135deg, #95a5a6 0%, #bdc3c7 100%);
+    color: white !important;
+    border-color: #95a5a6;
+}
+
+.difficulty-unknown:hover {
+    background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+    box-shadow: 0 4px 16px rgba(149, 165, 166, 0.4);
+}
+
+/* Small Size Variant */
+.difficulty-badge-sm {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+}
+
+/* Large Size Variant */
+.difficulty-badge-lg {
+    padding: 10px 24px;
+    font-size: 1rem;
+}
+
+/* Modal Difficulty Badge - Slightly Larger */
+.modal-body .difficulty-badge {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+}
+
+/* Badge Container - Better Spacing */
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Table Cell Badge - Centered */
+td .difficulty-badge,
+th .difficulty-badge {
+    margin: 0 auto;
+}
+
+/* Badge with tooltip */
+.difficulty-badge[data-bs-toggle="tooltip"] {
+    cursor: help;
+}
+
+/* Responsive - Smaller on mobile */
+@media (max-width: 576px) {
+    .difficulty-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+    
+    .badges-container {
+        gap: 6px;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .difficulty-badge {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .difficulty-badge:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* Print styles - Remove shadows and gradients */
+@media print {
+    .difficulty-badge {
+        box-shadow: none !important;
+        border: 2px solid currentColor !important;
+        background: white !important;
+        color: black !important;
+    }
+    
+    .difficulty-easy {
+        border-color: #11998e !important;
+        color: #11998e !important;
+    }
+    
+    .difficulty-medium {
+        border-color: #f39c12 !important;
+        color: #f39c12 !important;
+    }
+    
+    .difficulty-hard {
+        border-color: #eb3349 !important;
+        color: #eb3349 !important;
+    }
+}
+
+/* Accessibility - High contrast mode */
+@media (prefers-contrast: high) {
+    .difficulty-badge {
+        border-width: 3px;
+        font-weight: 700;
+    }
+}
+
+/* Animation on load */
+@keyframes badge-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.difficulty-badge {
+    animation: badge-appear 0.3s ease-out;
+}
+
